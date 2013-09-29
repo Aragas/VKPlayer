@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyProduct("Rainmeter")]
 
 [assembly: AssemblyTitleAttribute("VKPlayer")]
+[assembly: AssemblyDescriptionAttribute("Plugin for Rainmeter")]
