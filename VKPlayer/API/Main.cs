@@ -78,7 +78,6 @@ namespace Rainmeter
             return 0.0;
         }
 
-
         internal string GetString()
         {
             switch (Type)
