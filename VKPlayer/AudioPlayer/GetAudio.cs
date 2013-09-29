@@ -6,6 +6,7 @@
         {
             Player.Token = token;
             Player.Id = id;
+
             if (Command == "PlayPause")
             {
                 Player.PlayPause();

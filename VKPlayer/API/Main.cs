@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using PluginVK;
 using PlayerVK;
-using System.Reflection;
 
 namespace Rainmeter
 {
@@ -13,7 +12,6 @@ namespace Rainmeter
         enum AudioPlayer
         {
             Player,
-            Nope,
             Artist,
             Title,
             Duration
@@ -49,9 +47,6 @@ namespace Rainmeter
 
         internal void Initialize()
         {
-            //Verification v = new Verification();
-            //v.Main();
-            //return;
         }
 
         internal double Update()

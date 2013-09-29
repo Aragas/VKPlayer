@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using NAudio.Wave;
 using PluginVK;
@@ -266,72 +265,6 @@ namespace PlayerVK
             this.Close();
             GC.SuppressFinalize(this);
         }
-    }
-
-    internal class TokenId
-    {
-        public static string Token()
-        {
-            #region Dir
-            // Проверка файла на существование.
-            if (!Directory.Exists(Constants.dir))
-            {
-                Directory.CreateDirectory(Constants.dir);
-            }
-            if (!File.Exists(Constants.path_data))
-            {
-                using (FileStream stream = File.Create(Constants.path_data)) { }
-            }
-            #endregion
-
-            // Чтение параметров.
-            using (StreamReader sr = new StreamReader(Constants.path_data, Encoding.UTF8))
-            {
-                string crypted_id = sr.ReadLine();
-
-                if (crypted_id != null)
-                {
-                    Crypto cr = new Crypto();
-                    return cr.Decrypt(sr.ReadLine(), "ididitjustforlulz");
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public static string Id()
-        {
-            #region Dir
-            // Проверка файла на существование.
-            if (!Directory.Exists(Constants.dir))
-            {
-                Directory.CreateDirectory(Constants.dir);
-            }
-            if (!File.Exists(Constants.path_data))
-            {
-                using (FileStream stream = File.Create(Constants.path_data)) { }
-            }
-            #endregion
-
-            // Чтение параметров.
-            using (StreamReader sr = new StreamReader(Constants.path_data, Encoding.UTF8))
-            {
-                string crypted_id = sr.ReadLine();
-
-                if (crypted_id != null)
-                {
-                    Crypto cr = new Crypto();
-                    return cr.Decrypt(crypted_id, "ididitjustforlulz");
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
     }
 
 }

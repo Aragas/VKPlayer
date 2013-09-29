@@ -10,12 +10,6 @@ namespace PluginVK
         string token = null;
         string id = null;
 
-        public static void OAuthRun()
-        {
-            Application.Run(new OAuth());
-        }
-
-
         public OAuth()
         {
             InitializeComponent();
@@ -26,6 +20,11 @@ namespace PluginVK
                 + "&scope=friends,messages,audio&display=popup&response_type=token";
             webBrowser1.Navigate(url);
             return;
+        }
+
+        public static void OAuthRun()
+        {
+            Application.Run(new OAuth());
         }
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
