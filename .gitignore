@@ -1,0 +1,15 @@
+VKPlayer/bin/Debug/WindowsApplication.exe.config
+VKPlayer/bin/Debug/WindowsApplication.vshost.exe.config
+VKPlayer/bin/Debug/WindowsApplication.vshost.exe.manifest
+VKPlayer/obj/x64/Debug/NAudio.Gui.Fader.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.Graph.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.LcdPanel.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.PanSlider.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.Pot.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.VolumeSlider.resources
+VKPlayer/obj/x64/Debug/NAudio.Gui.WaveViewer.resources
+VKPlayer/obj/x64/Debug/NAudio.Utils.ProgressLog.resources
+VKPlayer/obj/x64/Debug/PluginVK.csproj.FileListAbsolute.txt
+VKPlayer/obj/x64/Debug/PluginVK.OAuth.en.resources
+VKPlayer/obj/x64/Debug/PluginVK.OAuth.resources
+VKPlayer/obj/x64/Debug/PluginVK.OAuth.ru.resources
