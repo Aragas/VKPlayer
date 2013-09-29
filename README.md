@@ -1,0 +1,4 @@
+VKPlayer
+========
+
+Plugin for Rainmeter
