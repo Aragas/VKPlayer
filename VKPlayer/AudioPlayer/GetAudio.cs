@@ -7,10 +7,12 @@
             Player.Token = token;
             Player.Id = id;
 
-            if (Command == "PlayPause")     Player.PlayPause();
-            else if (Command == "Stop")     Player.Stop();
-            else if (Command == "Next")     Player.Next();
+            if (Command == "PlayPause") Player.PlayPause();
+            else if (Command == "Stop") Player.Stop();
+            else if (Command == "Next") Player.Next();
             else if (Command == "Previous") Player.Previous();
+            else if (Command == "AddVolume") Player.AddVolume();
+            else if (Command == "RemVolume") Player.RemVolume();
             else return;
         }
     }

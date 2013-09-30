@@ -23,8 +23,10 @@ namespace PlayerVK
         }
         public static Playing option = Playing.Init;
 
+        public static WaveChannel32 volumeStream;
         static GetStream gStream = new GetStream();
         static WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+
         static Audio au = new Audio();
 
         public static string Token;
@@ -187,6 +189,20 @@ namespace PlayerVK
                 }
             }
         }
+        public static void AddVolume()
+        {
+            if (option == Playing.Play || option == Playing.Pause)
+            {
+                volumeStream.Volume += 0.1F;
+            }
+        }
+        public static void RemVolume()
+        {
+            if (option == Playing.Play || option == Playing.Pause)
+            {
+                volumeStream.Volume -= 0.1F;
+            }
+        }
         #endregion
 
     }
@@ -194,13 +210,9 @@ namespace PlayerVK
     internal class GetStream : IDisposable
     {
         private GCHandle gch;
+        private WaveChannel32 inputStream;
         private Stream ms = new MemoryStream();
         public string url { get; set; }
-        public WaveStream blockAlignedStream
-        {
-            get { return Wave(); }
-            set { }
-        }
 
         public WaveStream Wave()
         {
@@ -235,7 +247,10 @@ namespace PlayerVK
             #endregion
 
             ms.Position = 0;
-            return blockAlignedStream = new BlockAlignReductionStream(WaveFormatConversionStream.CreatePcmStream(new Mp3FileReader(ms)));
+
+            inputStream = new WaveChannel32(new Mp3FileReader(ms));
+            Player.volumeStream = inputStream;
+            return Player.volumeStream; //blockAlignedStream = new BlockAlignReductionStream();
 
         }
 
