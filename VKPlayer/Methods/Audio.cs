@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using PlayerVK;
 
 namespace PluginVK
 {
@@ -11,6 +12,7 @@ namespace PluginVK
 
         private string AudioCount()
         {
+
             // Параметры конфигурации.
             string method = "audio.getCount.xml?";
             string param = "owner_id=" + id;
@@ -23,7 +25,7 @@ namespace PluginVK
 
             #region ErrorCheck
             XmlNodeList nodeListError;
-            nodeListError = root.SelectNodes("error_code"); // Для выявления ошибочного запроса.
+            nodeListError = root.SelectNodes("error_code");
             // Выявление ошибочного запрса.
             string sucheck = "";
             string sucheckerror = "<error_code>5</error_code>";
@@ -34,15 +36,9 @@ namespace PluginVK
                 sucheck = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror)
-            {
-                return null;
-            }
+            if (sucheck == sucheckerror)  return null;
+            if (sucheck == sucheckerror2) return null;
 
-            if (sucheck == sucheckerror2)
-            {
-                return null;
-            }
             #endregion
 
             string countstring = "0";
@@ -82,15 +78,8 @@ namespace PluginVK
                 sucheck = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror)
-            {
-                return null;
-            }
-
-            if (sucheck == sucheckerror2)
-            {
-                return null;
-            }
+            if (sucheck == sucheckerror)  return null;
+            if (sucheck == sucheckerror2) return null;
             #endregion
 
             #region Filtering
@@ -107,39 +96,8 @@ namespace PluginVK
 
                     Array.Resize(ref arr3, arr3.Length + 1);
                     arr3[arr3.Length - 1] = space + artist + space + title + space + duration + space + url;
-                    //string[] array = { space + artist + space + title + duration + space + url };
-                    //array.CopyTo(arr3, array.Length);
-
-                    #region
-                    //byte[] ubytes1 = Encoding.UTF8.GetBytes(artist);
-                    //byte[] ubytes2 = Encoding.UTF8.GetBytes(title);
-                    //byte[] ubytes3 = Encoding.UTF8.GetBytes(duration);
-                    //byte[] ubytes4 = Encoding.UTF8.GetBytes(url);
-                    //byte[] ubytes5 = Encoding.UTF8.GetBytes(space);
-
-                    //onlinems.Write(ubytes5, 0, ubytes5.Length);
-                    //onlinems.Write(ubytes1, 0, ubytes1.Length);
-                    //onlinems.Write(ubytes5, 0, ubytes5.Length);
-                    //onlinems.Write(ubytes2, 0, ubytes2.Length);
-                    //onlinems.Write(ubytes5, 0, ubytes5.Length);
-                    //onlinems.Write(ubytes3, 0, ubytes3.Length);
-                    //onlinems.Write(ubytes5, 0, ubytes5.Length);
-                    //onlinems.Write(ubytes4, 0, ubytes4.Length);
-                    #endregion
                 }
 
-                // Добавление в конец последней &.
-                //string space1 = "&&";
-                //byte[] ubytes51 = Encoding.UTF8.GetBytes(space1);
-                //onlinems.Write(ubytes51, 0, ubytes51.Length);
-
-                //using (StreamReader reader = new StreamReader(onlinems))
-                //{
-                //    onlinems.Position = 0;
-                //    text = reader.ReadToEnd();
-                //}
-
-                //return text;
                 return arr3;
             }
             #endregion

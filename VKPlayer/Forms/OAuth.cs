@@ -17,7 +17,7 @@ namespace PluginVK
             // Переход по ссылке.
             string url = "https://oauth.vk.com/authorize?client_id=3328403"
                 + "&redirect_uri=https://oauth.vk.com/blank.html"
-                + "&scope=friends,messages,audio&display=popup&response_type=token";
+                + "&scope=audio&display=popup&response_type=token";
             webBrowser1.Navigate(url);
             return;
         }

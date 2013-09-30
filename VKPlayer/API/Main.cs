@@ -54,25 +54,25 @@ namespace Rainmeter
             switch (Type)
             {
                 case AudioPlayer.Duration:
-                    if (Player.time == 0)
+                    if (Player.Time == 0)
                     {
-                        Player.time = Player.Duration;
-                        return (double)Player.time;
+                        Player.Time = Player.Duration;
+                        return (double)Player.Time;
                     }
                     else
                     {
-                        if (Player.time > 1)
+                        if (Player.Time > 1)
                         {
                             if (Player.option != Player.Playing.Pause)
                             {
-                                Player.time--;
+                                Player.Time--;
                             }
                             else 
-                            { 
-                                return (double)Player.time;
+                            {
+                                return (double)Player.Time;
                             }
                         }
-                        return (double)Player.time;
+                        return (double)Player.Time;
                     }
             }
             return 0.0;
@@ -110,7 +110,7 @@ namespace Rainmeter
 
         internal void ExecuteBang(string Command)
         {
-            Verification.Audio(Command);
+            Verification.Start(Command);
             return;
         }
 

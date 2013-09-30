@@ -22,10 +22,7 @@ namespace PluginVK
                     return Sr.ReadToEnd();
                 }
             }
-            else
-            {
-                return null;
-            }
+            else return null;
         }
 
         private byte[] Encrypt(byte[] key, string value)

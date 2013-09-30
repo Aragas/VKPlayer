@@ -8,6 +8,10 @@ using PluginVK;
 
 namespace PlayerVK
 {
+    //To do:
+    //Save mp3 to disk while playing from url.
+    //Check if mp3 is saved and play local.
+    //Play next mp3 after previous
     public class Player
     {
         public enum Playing
@@ -25,35 +29,38 @@ namespace PlayerVK
 
         public static string Token;
         public static string Id;
+        public static int Time;
 
-        public static int time = 0;
+        private static bool arrayExists
+        {
+            get
+            {
+                if (_array != null) return true;
+                else return false;
+            }
+        }
+        private static int numb;
         private static string[] _array;
         private static string[] array
         {
             get
             {
-                if (_array == null)
+                if (arrayExists) return _array;
+                else
                 {
                     au.token = Token;
                     au.id = Id;
                     _array = au.AudioList();
                     return _array;
                 }
-                else
-                {
-                    return _array;
-                }
             }
-            set { }
         }
-        private static int numb = 0;
         private static string url
         {
             get
             {
                 return array[numb].Split('#')[4];
             }
-            set { }
         }
 
         #region GetString()
@@ -61,46 +68,26 @@ namespace PlayerVK
         {
             get
             {
-                if (array == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return array[numb].Split('#')[1];
-                }
+                if (arrayExists) return array[numb].Split('#')[1];
+                else return null; 
             }
-            set { }
         }
         public static string Title
         {
             get
             {
-                if (array == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return array[numb].Split('#')[2];
-                }
+                if (arrayExists) return array[numb].Split('#')[2];
+                else return null;
+
             }
-            set { }
         }
         public static int Duration
         {
             get
             {
-                if (array == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return Convert.ToInt32(array[numb].Split('#')[3]);
-                }
+                if (arrayExists) return Convert.ToInt32(array[numb].Split('#')[3]);
+                else return 0;
             }
-            set { }
         }
         #endregion
 
@@ -113,7 +100,7 @@ namespace PlayerVK
             }
             else if (option == Playing.Pause)
             {
-                playPause();
+                play();
             }
             else if (option == Playing.Init)
             {
@@ -142,7 +129,7 @@ namespace PlayerVK
             waveOut.Play();
 
         }
-        private static void playPause()
+        private static void play()
         {
             waveOut.Play();
         }

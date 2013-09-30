@@ -1,4 +1,5 @@
 ﻿using PlayerVK;
+using System;
 using System.IO;
 using System.Text;
 
@@ -6,26 +7,42 @@ namespace PluginVK
 {
     public static class Verification
     {
-        public static string Id = null;
-        public static string Token = null;
+        public static string Id;
+        public static string Token;
+
+        public static bool TokenIdExists
+        {
+            get
+            {
+                if (Token != null || Id != null) return true;
+                else return false;
+            }
+        }
+        public static bool DirExists
+        {
+            get
+            {
+                if (!Directory.Exists(Constants.dir)) return true;
+                else return false;
+            }
+        }
+        public static bool FileExists
+        {
+            get
+            {
+                if (File.Exists(Constants.path_data)) return true;
+                else return false;
+            }
+        }
 
         private static string crypted_id = null;
 
-        public static void Audio(string Command)
+        public static void Start(string Command)
         {
-            if (Id == null || Token == null)
+            if (!TokenIdExists)
             {
-                #region Dir
-                // Проверка файла на существование.
-                if (!Directory.Exists(Constants.dir))
-                {
-                    Directory.CreateDirectory(Constants.dir);
-                }
-                if (!File.Exists(Constants.path_data))
-                {
-                    using (FileStream stream = File.Create(Constants.path_data)) { }
-                }
-                #endregion
+                if (!DirExists) DirCreate();
+                if (!FileExists) FileCreate();
 
                 // Чтение параметров.
                 using (StreamReader sr = new StreamReader(Constants.path_data, Encoding.UTF8))
@@ -37,25 +54,25 @@ namespace PluginVK
                         Crypto cr = new Crypto();
                         Id = cr.Decrypt(crypted_id, "ididitjustforlulz");
                         Token = cr.Decrypt(sr.ReadLine(), "ididitjustforlulz");
+
+                        GetAudio.Get(Command, Token, Id);
                     }
+                    else OAuth.OAuthRun();
                 }
 
-                // Проверка существования данных.
-                if (crypted_id == null)
-                {
-                    OAuth.OAuthRun();
-                }
-                else
-                {
-                    GetAudio.Get(Command, Token, Id);
-                }
             }
-            else
-            {
-                GetAudio.Get(Command, Token, Id);
-            }
+            else GetAudio.Get(Command, Token, Id);
         }
 
+        public static void DirCreate()
+        {
+            Directory.CreateDirectory(Constants.dir);
+        }
+
+        public static void FileCreate()
+        {
+            using (FileStream fs = File.Create(Constants.path_data)) { }
+        }
     }
 }
 
