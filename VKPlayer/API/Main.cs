@@ -11,11 +11,13 @@ namespace Rainmeter
         enum AudioPlayer
         {
             Player,
-            State,
             Artist,
             Title,
             Duration,
-            Time
+            Time,
+            State,
+            Repeat,
+            Shuffle
         }
         AudioPlayer Type;
 
@@ -46,22 +48,22 @@ namespace Rainmeter
                 case "time":
                     Type = AudioPlayer.Time;
                     break;
+                case "repeat":
+                    Type = AudioPlayer.Repeat;
+                    break;
+                case "shuffle":
+                    Type = AudioPlayer.Shuffle;
+                    break;
                 default:
                     API.Log(API.LogType.Error, "VKPlugin.dll Type=" + type + " not valid");
                     break;
             }
-            Player.Repeat = rm.ReadString("Repeat", "0");
+
         }
 
         internal void Initialize()
         {
         }
-
-        //internal string ReadString(option, defValue)
-        //{
-        //    char* value = RmReadString((void*)m_Rm, ToUnsafe(option), ToUnsafe(defValue), replaceMeasures ? 1 : 0);
-        //    return new string(value);
-        //}
 
         internal double Update()
         {
@@ -71,10 +73,19 @@ namespace Rainmeter
                     return Player.Duration;
 
                 case AudioPlayer.Time:
+                    if (Player.Played) Player.NextCheck(); //find better methode.
                     return Math.Round(Player.Time);
 
                 case AudioPlayer.State:
                     return (double)Player.State;
+
+                case AudioPlayer.Repeat:
+                    if (Player.Repeat) return 255.0;
+                    else return 128.0;
+
+                case AudioPlayer.Shuffle:
+                    if (Player.Shuffle) return 255.0;
+                    else return 128.0;
             }
             return 0.0;
         }

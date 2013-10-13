@@ -1,6 +1,16 @@
+[Variables]
+Repeat=False
+Shuffle=False
+
 [VKPlayer]
 Measure=Plugin
 Plugin=VKPlayer.dll
+Type=Player
+
+[State]
+Measure=Plugin
+Plugin=VKPlayer.dll
+Type=State
 
 [Artist]
 Measure=Plugin
@@ -17,110 +27,95 @@ Measure=Plugin
 Plugin=VKPlayer.dll
 Type=Duration
 
-[MeterTitle]
-Meter=STRING
-MeasureName=Title
-X=50
-Y=15
-FontFace=Calibri
-FontSize=10
-FontColor=250,250,250,255
-StringAlign=LEFT
-AntiAlias=1
+[Time]
+Measure=Plugin
+Plugin=VKPlayer.dll
+Type=Time
+MinValue=0
+MaxValue=[Duration]
+DynamicVariables=1
+
+[Repeat]
+Measure=Plugin
+Plugin=VKPlayer.dll
+Type=Repeat
+
+[Shuffle]
+Measure=Plugin
+Plugin=VKPlayer.dll
+Type=Shuffle
 
 [MeterArtist]
 Meter=STRING
 MeasureName=Artist
-X=50
+X=10
 Y=0
-FontFace=Calibri
+FontFace=Proxima
+FontSize=10
+FontColor=250,250,250,255
+AntiAlias=1
+
+[MeterTitle]
+Meter=STRING
+MeasureName=Title
+X=10
+Y=15
+FontFace=Proxima
 FontSize=10
 FontColor=250,250,250,255
 AntiAlias=1
 
 
-
-;-------------------------
-; BUTTONS
-[Album]
+[MeterPrev]
 Meter=Image
-ImageName=Player\MusicAlbum.W.png
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "OnlineInfo"][!Update]
-X=0
-Y=0
-
-[PlayPause]
-Meter=Image
-ImageName=Player\MusicPlay.W.png
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "PlayPause"][!Update]
-W=12
-H=12
-X=70
-Y=32
-
-[Stop]
-Meter=Image
-ImageName=Player\MusicStop.W.png
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Stop"][!Update]
-W=12
-H=12
-X=90
-Y=32
-
-[Next]
-Meter=Image
-ImageName=Player\MusicNext.W.png
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Next"][!Update]
-W=12
-H=12
-X=110
-Y=32
-
-[Prev]
-Meter=Image
+MeterStyle=Button
 ImageName=Player\MusicPrevious.W.png
 LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Previous"][!Update]
-W=12
-H=12
-X=50
-Y=32
+X=12
 
-[Repeat]
+[MeterPlayPause]
 Meter=Image
+MeterStyle=Button
+MeasureName=State
+ImageName=Player\Music.%1.W.png
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "PlayPause"][!Update]
+
+[MeterNext]
+Meter=Image
+MeterStyle=Button
+ImageName=Player\MusicNext.W.png
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Next"][!Update]
+
+[MeterRepeat]
+Meter=Image
+MeterStyle=Button
 ImageName=Player\MusicRepeat.W.png
-ImageAlpha=128
-W=12
-H=12
-X=130
-Y=32
-LeftMouseUpAction=[][!Update]
+ImageAlpha=[Repeat]
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Repeat"][!Update]
 DynamicVariables=1
 
-[Shuffle]
+[MeterShuffle]
 Meter=Image
+MeterStyle=Button
 ImageName=Player\MusicShuffle.W.png
-ImageAlpha=128
-W=12
-H=12
-X=150
-Y=32
+ImageAlpha=[Shuffle]
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Shuffle"][!Update]
 DynamicVariables=1
 
-;[CountDown]
-;Measure=Calc
-;Formula=(CountDown-1+([Duration]+1))%([Duration]+1)
-;MinValue=0
-;MaxValue=[Duration]
-
+[Button]
+W=12
+H=12
+X=20r
+Y=35
 
 [Progress]
-MeasureName=Duration
+MeasureName=Time
 Meter=BAR
-Flip=1
-BarColor=150,150,150,255
-SolidColor=185,250,160,255
+Flip=0
+BarColor=185,250,160,255
+SolidColor=150,150,150,255
 BarOrientation=Horizontal
-x=0
-y=45
-W=200
+x=12
+y=50
+W=180
 H=10

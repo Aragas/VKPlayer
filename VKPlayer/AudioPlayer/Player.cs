@@ -11,7 +11,7 @@ namespace VKPlayer
     //To do:
     //Save mp3 to disk while playing from url.
     //Check if mp3 is saved and play local.
-    //Play next mp3 after previous
+    //Play next mp3 after previous (find better methode)
 
     public class Player
     {
@@ -30,31 +30,20 @@ namespace VKPlayer
 
         public static string Token;
         public static string Id;
-        public static string Repeat;
         public static bool Played
         {
             get
             {
                 if (option == Playing.Ready)
                 {
-                    if (Duration < volumeStream.CurrentTime.TotalSeconds) return true;
-                    else return false;
+                    if (Duration > volumeStream.CurrentTime.TotalSeconds) return false;
+                    else return true;
                 }
-                else return true;
-            }
-        }
-
-        //public static bool Shuffle;
-
-        private static bool repeat
-        {
-            get
-            {
-                if (Repeat.Contains("1"))
-                    return true;
                 else return false;
             }
         }
+
+        #region Internal
         private static bool arrayExists
         {
             get
@@ -86,8 +75,9 @@ namespace VKPlayer
                 return array[numb].Split('#')[4];
             }
         }
+        #endregion
 
-        #region GetString()
+        #region Variables
         public static string Artist
         {
             get
@@ -110,15 +100,15 @@ namespace VKPlayer
             get
             {
                 if (arrayExists) return Convert.ToInt32(array[numb].Split('#')[3]);
-                else return 0;
+                else return 0.0;
             }
         }
-        public static int State
+        public static double State
         {
             get
             {
-                if (waveOut.PlaybackState == PlaybackState.Playing) return 1;
-                else return 0;
+                if (waveOut.PlaybackState == PlaybackState.Playing) return 1.0;
+                else return 0.0;
             }
         }
         public static double Time
@@ -136,8 +126,11 @@ namespace VKPlayer
                 else return 0.0;
             }
         }
+        public static bool Repeat = false;
+        public static bool Shuffle = false;
         #endregion
 
+        #region Execute
         public static void Execute(string Command, string token, string id)
         {
             Token = token;
@@ -149,9 +142,11 @@ namespace VKPlayer
             else if (Command == "Previous") Previous();
             else if (Command == "AddVolume") AddVolume();
             else if (Command == "RemVolume") RemVolume();
+            else if (Command == "Repeat") RepeatV();
+            else if (Command == "Shuffle") ShuffleV();
             else return;
         }
-        #region ExecuteBang()
+
         public static void PlayPause()
         {
             if (option == Playing.Ready)
@@ -175,24 +170,6 @@ namespace VKPlayer
                 #endregion
             }
         }
-
-        private static void Play()
-        {
-            gStream.url = url;
-
-            waveOut.Init(gStream.Wave());
-            volumeStream.Volume = 0.7F;
-            waveOut.Play();
-        }
-        private static void play()
-        {
-            waveOut.Play();
-        }
-        private static void pause()
-        {
-            waveOut.Pause();
-        }
-
         public static void Stop()
         {
             waveOut.Stop();
@@ -240,8 +217,80 @@ namespace VKPlayer
         {
             volumeStream.Volume -= 0.1F;
         }
-        #endregion
+        public static void RepeatV()
+        {
+            if (Repeat)
+            {
+                Repeat = false;
+            }
+            else
+            {
+                Repeat = true;
+                Shuffle = false;
+            }
+        }
+        public static void ShuffleV()
+        {
+            if (Shuffle)
+            {
+                Shuffle = false;
+            }
+            else
+            {
+                Shuffle = true;
+                Repeat = false;
+            }
+        }
 
+        public static void NextCheck()
+        {
+            if (Repeat)
+            {
+                Stop();
+                Play();
+            }
+            else if (Shuffle)
+            {
+                if (waveOut.PlaybackState != PlaybackState.Stopped)
+                {
+                    if (numb < array.Length)
+                    {
+                        Random random = new Random();
+                        numb = random.Next(0, array.Length);
+
+                        Stop();
+                        waveOut.Dispose();
+                        waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                        gStream.Dispose();
+                        gStream = new GetStream();
+                        Play();
+                    }
+                }
+            }
+            else
+            {
+                Next();
+            }
+        }
+
+        private static void Play()
+        {
+            gStream.url = url;
+
+            waveOut.Init(gStream.Wave());
+            volumeStream.Volume = 0.7F;
+            waveOut.Play();
+        }
+        private static void play()
+        {
+            waveOut.Play();
+        }
+        private static void pause()
+        {
+            waveOut.Pause();
+        }
+
+        #endregion
 
     }
 
@@ -249,6 +298,7 @@ namespace VKPlayer
     {
         private GCHandle gch;
         private Stream ms = new MemoryStream();
+
         public string url { get; set; }
 
         public WaveStream Wave()
@@ -295,7 +345,6 @@ namespace VKPlayer
                 this.gch.Free();
             }
         }
-
         public void Dispose()
         {
             this.Close();
