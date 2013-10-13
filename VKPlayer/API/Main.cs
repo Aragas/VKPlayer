@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using PluginVK;
-using PlayerVK;
+using VKPlayer;
 
 namespace Rainmeter
 {
@@ -12,9 +11,11 @@ namespace Rainmeter
         enum AudioPlayer
         {
             Player,
+            State,
             Artist,
             Title,
-            Duration
+            Duration,
+            Time
         }
         AudioPlayer Type;
 
@@ -30,6 +31,9 @@ namespace Rainmeter
                 case "player":
                     Type = AudioPlayer.Player;
                     break;
+                case "state":
+                    Type = AudioPlayer.State;
+                    break;
                 case "artist":
                     Type = AudioPlayer.Artist;
                     break;
@@ -39,41 +43,38 @@ namespace Rainmeter
                 case "duration":
                     Type = AudioPlayer.Duration;
                     break;
+                case "time":
+                    Type = AudioPlayer.Time;
+                    break;
                 default:
                     API.Log(API.LogType.Error, "VKPlugin.dll Type=" + type + " not valid");
                     break;
             }
+            Player.Repeat = rm.ReadString("Repeat", "0");
         }
 
         internal void Initialize()
         {
         }
 
+        //internal string ReadString(option, defValue)
+        //{
+        //    char* value = RmReadString((void*)m_Rm, ToUnsafe(option), ToUnsafe(defValue), replaceMeasures ? 1 : 0);
+        //    return new string(value);
+        //}
+
         internal double Update()
         {
             switch (Type)
             {
                 case AudioPlayer.Duration:
-                    if (Player.Time == 0)
-                    {
-                        Player.Time = Player.Duration;
-                        return (double)Player.Time;
-                    }
-                    else
-                    {
-                        if (Player.Time > 1)
-                        {
-                            if (Player.option != Player.Playing.Pause)
-                            {
-                                Player.Time--;
-                            }
-                            else 
-                            {
-                                return (double)Player.Time;
-                            }
-                        }
-                        return (double)Player.Time;
-                    }
+                    return Player.Duration;
+
+                case AudioPlayer.Time:
+                    return Math.Round(Player.Time);
+
+                case AudioPlayer.State:
+                    return (double)Player.State;
             }
             return 0.0;
         }
@@ -86,31 +87,20 @@ namespace Rainmeter
                     return "VKPlayer by Aragas (Aragasas)";
 
                 case AudioPlayer.Artist:
-                    if (Player.Artist == null)
-                    {
-                        return "Not Authorized";
-                    }
-                    else
-                    {
-                        return Player.Artist;
-                    }
+                    if (Player.Artist == null) return "Not Authorized";
+                    else return Player.Artist;
 
                 case AudioPlayer.Title:
-                    if (Player.Title == null)
-                    {
-                        return "Click Play";
-                    }
-                    else
-                    {
-                        return Player.Title;
-                    }
+                    if (Player.Title == null) return "Click Play";
+                    else return Player.Title;
+
             }
             return null;
         }
 
         internal void ExecuteBang(string Command)
         {
-            Verification.Start(Command);
+            Verification.StartExecute(Command);
             return;
         }
 

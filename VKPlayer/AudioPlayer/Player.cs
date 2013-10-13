@@ -4,35 +4,57 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using NAudio.Wave;
-using PluginVK;
+using System.ComponentModel;
 
-namespace PlayerVK
+namespace VKPlayer
 {
     //To do:
     //Save mp3 to disk while playing from url.
     //Check if mp3 is saved and play local.
     //Play next mp3 after previous
+
     public class Player
     {
         public enum Playing
         {
             Init,
-            Play,
-            Pause,
-            Stop
+            Buffering,
+            Ready
         }
         public static Playing option = Playing.Init;
 
-        public static WaveChannel32 volumeStream;
+        internal static WaveChannel32 volumeStream;
         static GetStream gStream = new GetStream();
         static WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-
         static Audio au = new Audio();
 
         public static string Token;
         public static string Id;
-        public static int Time;
+        public static string Repeat;
+        public static bool Played
+        {
+            get
+            {
+                if (option == Playing.Ready)
+                {
+                    if (Duration < volumeStream.CurrentTime.TotalSeconds) return true;
+                    else return false;
+                }
+                else return true;
+            }
+        }
 
+        //public static bool Shuffle;
+
+        private static bool repeat
+        {
+            get
+            {
+                if (Repeat.Contains("1"))
+                    return true;
+                else return false;
+            }
+        }
         private static bool arrayExists
         {
             get
@@ -83,7 +105,7 @@ namespace PlayerVK
 
             }
         }
-        public static int Duration
+        public static double Duration
         {
             get
             {
@@ -91,21 +113,56 @@ namespace PlayerVK
                 else return 0;
             }
         }
+        public static int State
+        {
+            get
+            {
+                if (waveOut.PlaybackState == PlaybackState.Playing) return 1;
+                else return 0;
+            }
+        }
+        public static double Time
+        {
+            get
+            {
+                if (waveOut.PlaybackState != PlaybackState.Stopped)
+                {
+                    if (!Played)
+                    {
+                        return volumeStream.CurrentTime.TotalSeconds;
+                    }
+                    else return 0.0;
+                }
+                else return 0.0;
+            }
+        }
         #endregion
 
+        public static void Execute(string Command, string token, string id)
+        {
+            Token = token;
+            Id = id;
+
+            if (Command == "PlayPause") PlayPause();
+            else if (Command == "Stop") Stop();
+            else if (Command == "Next") Next();
+            else if (Command == "Previous") Previous();
+            else if (Command == "AddVolume") AddVolume();
+            else if (Command == "RemVolume") RemVolume();
+            else return;
+        }
         #region ExecuteBang()
         public static void PlayPause()
         {
-            if (option == Playing.Play)
+            if (option == Playing.Ready)
             {
-                Pause();  
-            }
-            else if (option == Playing.Pause)
-            {
-                play();
+                if (waveOut.PlaybackState == PlaybackState.Playing) pause();
+                else if (waveOut.PlaybackState == PlaybackState.Paused) play();
+                else if (waveOut.PlaybackState == PlaybackState.Stopped) Play();
             }
             else if (option == Playing.Init)
             {
+                #region
                 ThreadStart work = delegate
                 {
                     try
@@ -115,48 +172,34 @@ namespace PlayerVK
                     catch { }
                 };
                 new Thread(work).Start();
-            }
-            else if (option == Playing.Stop)
-            {
-                Play();
+                #endregion
             }
         }
+
         private static void Play()
         {
-            option = Playing.Play;
-
             gStream.url = url;
 
             waveOut.Init(gStream.Wave());
+            volumeStream.Volume = 0.7F;
             waveOut.Play();
-
         }
         private static void play()
         {
             waveOut.Play();
         }
+        private static void pause()
+        {
+            waveOut.Pause();
+        }
 
         public static void Stop()
         {
-            if (option != Playing.Stop)
-            {
-                option = Playing.Stop;
-
-                waveOut.Stop();
-            }
-        }
-        public static void Pause()
-        {
-            if (option == Playing.Play)
-            {
-                option = Playing.Pause;
-
-                waveOut.Pause();
-            }
+            waveOut.Stop();
         }
         public static void Next()
         {
-            if (option != Playing.Stop)
+            if (waveOut.PlaybackState != PlaybackState.Stopped)
             {
                 if (numb < array.Length)
                 {
@@ -173,7 +216,7 @@ namespace PlayerVK
         }
         public static void Previous()
         {
-            if (option != Playing.Stop)
+            if (waveOut.PlaybackState != PlaybackState.Stopped)
             {
 
                 if (numb > 0)
@@ -191,26 +234,20 @@ namespace PlayerVK
         }
         public static void AddVolume()
         {
-            if (option == Playing.Play || option == Playing.Pause)
-            {
-                volumeStream.Volume += 0.1F;
-            }
+            volumeStream.Volume += 0.1F;
         }
         public static void RemVolume()
         {
-            if (option == Playing.Play || option == Playing.Pause)
-            {
-                volumeStream.Volume -= 0.1F;
-            }
+            volumeStream.Volume -= 0.1F;
         }
         #endregion
+
 
     }
 
     internal class GetStream : IDisposable
     {
         private GCHandle gch;
-        private WaveChannel32 inputStream;
         private Stream ms = new MemoryStream();
         public string url { get; set; }
 
@@ -237,20 +274,17 @@ namespace PlayerVK
             // Pre-buffering some data to allow NAudio to start playing
             while (ms.Length < 65536 * 10)
             {
-                Thread.Sleep(1000);
-                //playbackState = StreamingPlaybackState.Buffering;
+                if (Player.option != Player.Playing.Buffering) Player.option = Player.Playing.Buffering;
+
+                Thread.Sleep(500);
+                
             }
-            if (ms.Length > 65536 * 10)
-            {
-                //playbackState = StreamingPlaybackState.Playing;
-            }
+            if (ms.Length > 65536 * 10) Player.option = Player.Playing.Ready;
             #endregion
 
             ms.Position = 0;
-
-            inputStream = new WaveChannel32(new Mp3FileReader(ms));
-            Player.volumeStream = inputStream;
-            return Player.volumeStream; //blockAlignedStream = new BlockAlignReductionStream();
+            Player.volumeStream = new WaveChannel32(new Mp3FileReader(ms));
+            return Player.volumeStream;
 
         }
 

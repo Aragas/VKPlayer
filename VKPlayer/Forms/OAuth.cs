@@ -3,12 +3,18 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PluginVK
+namespace VKPlayer
 {
     public partial class OAuth : Form
     {
         string token = null;
         string id = null;
+
+        public static void OAuthRun()
+        {
+            Application.Run(new OAuth());
+        }
+
 
         public OAuth()
         {
@@ -22,11 +28,6 @@ namespace PluginVK
             return;
         }
 
-        public static void OAuthRun()
-        {
-            Application.Run(new OAuth());
-        }
-
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             // Изъятие из URL строки.
@@ -36,26 +37,26 @@ namespace PluginVK
             // Нахождение токена, временя действия токена и id.
             token = l.Split('&')[0].Split('=')[1];
             id = l.Split('=')[3];
-            Crypto cr = new Crypto();
-            string crypto_token = cr.Encrypt(token, "ididitjustforlulz");
-            string crypto_id = cr.Encrypt(id, "ididitjustforlulz");
+            //Crypto cr = new Crypto();
+            //string crypto_token = cr.Encrypt(token, "ididitjustforlulz");
+            //string crypto_id = cr.Encrypt(id, "ididitjustforlulz");
 
-            using (FileStream fs = File.OpenWrite(Constants.path_data))
-            {
-                // Перевод id в байты.
-                string idnl = crypto_id + Environment.NewLine;
-                byte[] idbyte = UTF8Encoding.UTF8.GetBytes(idnl);
-
-                // Запись id в файл.
-                fs.Write(idbyte, 0, idbyte.Length);
-
-                // Создание байтового токена.
-                byte[] info =
-                    new UTF8Encoding(true).GetBytes(crypto_token);
-
-                // Запись токена в файл.
-                fs.Write(info, 0, info.Length);
-            }
+            //using (FileStream fs = File.OpenWrite(Constants.path_data))
+            //{
+            //    // Перевод id в байты.
+            //    string idnl = crypto_id + Environment.NewLine;
+            //    byte[] idbyte = UTF8Encoding.UTF8.GetBytes(idnl);
+            //
+            //    // Запись id в файл.
+            //    fs.Write(idbyte, 0, idbyte.Length);
+            //
+            //    // Создание байтового токена.
+            //    byte[] info =
+            //        new UTF8Encoding(true).GetBytes(crypto_token);
+            //
+            //    // Запись токена в файл.
+            //    fs.Write(info, 0, info.Length);
+            //}
         }
 
         private void button1_Click(object sender, EventArgs e)

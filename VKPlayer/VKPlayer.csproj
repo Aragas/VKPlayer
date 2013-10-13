@@ -98,7 +98,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioPlayer\GetAudio.cs" />
     <Compile Include="Methods\Audio.cs" />
     <Compile Include="NAudio\Codecs\ALawDecoder.cs" />
     <Compile Include="NAudio\Codecs\ALawEncoder.cs" />
@@ -271,7 +270,6 @@
     <Compile Include="NAudio\Gui\WaveViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Methods\Crypto.cs" />
     <Compile Include="API\RainmeterAPI.cs" />
     <Compile Include="AudioPlayer\Player.cs" />
     <Compile Include="NAudio\Midi\ChannelAfterTouchEvent.cs" />

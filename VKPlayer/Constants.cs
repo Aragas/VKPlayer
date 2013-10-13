@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PluginVK
+namespace VKPlayer
 {
     /// <summary>
     /// Contains various constants used by project.

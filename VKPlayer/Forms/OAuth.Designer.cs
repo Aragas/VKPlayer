@@ -1,4 +1,4 @@
-﻿namespace PluginVK
+﻿namespace VKPlayer
 {
     partial class OAuth
     {

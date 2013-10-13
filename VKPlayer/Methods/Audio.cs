@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using PlayerVK;
 
-namespace PluginVK
+namespace VKPlayer
 {
     public class Audio
     {
@@ -93,6 +92,9 @@ namespace PluginVK
                     string title = node["title"].InnerText;
                     string duration = node["duration"].InnerText;
                     string url = node["url"].InnerText.Split('?')[0];
+
+                    if (artist.Contains("&amp;")) artist = artist.Replace("&amp;", "&");
+                    if (title.Contains("&amp;")) title = title.Replace("&amp;", "&");
 
                     Array.Resize(ref arr3, arr3.Length + 1);
                     arr3[arr3.Length - 1] = space + artist + space + title + space + duration + space + url;

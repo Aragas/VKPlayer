@@ -1,9 +1,9 @@
-﻿using PlayerVK;
-using System;
+﻿using System;
 using System.IO;
+using System.Net;
 using System.Text;
 
-namespace PluginVK
+namespace VKPlayer
 {
     public static class Verification
     {
@@ -18,61 +18,49 @@ namespace PluginVK
                 else return false;
             }
         }
-        public static bool DirExists
-        {
-            get
-            {
-                if (!Directory.Exists(Constants.dir)) return true;
-                else return false;
-            }
-        }
-        public static bool FileExists
-        {
-            get
-            {
-                if (File.Exists(Constants.path_data)) return true;
-                else return false;
-            }
-        }
 
-        private static string crypted_id = null;
-
-        public static void Start(string Command)
+        public static void StartExecute(string Command)
         {
             if (!TokenIdExists)
             {
-                if (!DirExists) DirCreate();
-                if (!FileExists) FileCreate();
-
-                // Чтение параметров.
-                using (StreamReader sr = new StreamReader(Constants.path_data, Encoding.UTF8))
-                {
-                    crypted_id = sr.ReadLine();
-
-                    if (crypted_id != null)
-                    {
-                        Crypto cr = new Crypto();
-                        Id = cr.Decrypt(crypted_id, "ididitjustforlulz");
-                        Token = cr.Decrypt(sr.ReadLine(), "ididitjustforlulz");
-
-                        GetAudio.Get(Command, Token, Id);
-                    }
-                    else OAuth.OAuthRun();
-                }
-
+                //try
+                //{
+                    OAuth.OAuthRun();
+                    Player.Execute(Command, Token, Id);
+                //}
+                //catch { }
             }
-            else GetAudio.Get(Command, Token, Id);
+            else
+            {
+                //try
+                //{
+                    Player.Execute(Command, Token, Id);
+                //}
+                //catch { }
+            }
         }
 
-        public static void DirCreate()
+        static void Check()
         {
-            Directory.CreateDirectory(Constants.dir);
+            string url = "http://oauth.vk.com/authorize?client_id=3328403"
+                + "&redirect_uri=https://oauth.vk.com/blank.html"
+                + "&scope=audio&display=popup&response_type=token";
+
+            HttpWebRequest httpWebRequest = WebRequest.Create(url) as HttpWebRequest;
+            httpWebRequest.Method = "GET";
+            //httpWebRequest.AllowAutoRedirect = true;
+            HttpWebResponse httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
+            if (httpWebResponse.StatusCode == HttpStatusCode.OK)
+            {
+                if (httpWebResponse.GetResponseHeader("Content-Length") == "6254") ;
+                {
+                }
+                Console.Write(httpWebResponse.GetResponseHeader("Content-Length"));
+            }
+            Console.Write("{0}Press any key to continue...", Environment.NewLine);
+            Console.ReadKey();
         }
 
-        public static void FileCreate()
-        {
-            using (FileStream fs = File.Create(Constants.path_data)) { }
-        }
     }
 }
 
