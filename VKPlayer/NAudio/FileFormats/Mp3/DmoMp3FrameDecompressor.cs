@@ -1,30 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using NAudio.Dmo;
 using NAudio.Wave;
-using System.Diagnostics;
 
 namespace NAudio.FileFormats.Mp3
 {
     /// <summary>
-    /// MP3 Frame decompressor using the Windows Media MP3 Decoder DMO object
+    ///     MP3 Frame decompressor using the Windows Media MP3 Decoder DMO object
     /// </summary>
     public class DmoMp3FrameDecompressor : IMp3FrameDecompressor
     {
-        private WindowsMediaMp3Decoder mp3Decoder;
-        private WaveFormat pcmFormat;
+        private readonly WaveFormat pcmFormat;
         private MediaBuffer inputMediaBuffer;
+        private WindowsMediaMp3Decoder mp3Decoder;
         private DmoOutputDataBuffer outputBuffer;
         private bool reposition;
 
         /// <summary>
-        /// Initializes a new instance of the DMO MP3 Frame decompressor
+        ///     Initializes a new instance of the DMO MP3 Frame decompressor
         /// </summary>
         /// <param name="sourceFormat"></param>
         public DmoMp3FrameDecompressor(WaveFormat sourceFormat)
         {
-            this.mp3Decoder = new WindowsMediaMp3Decoder();
+            mp3Decoder = new WindowsMediaMp3Decoder();
             if (!mp3Decoder.MediaObject.SupportsInputWaveFormat(0, sourceFormat))
             {
                 throw new ArgumentException("Unsupported input format");
@@ -43,12 +41,15 @@ namespace NAudio.FileFormats.Mp3
         }
 
         /// <summary>
-        /// Converted PCM WaveFormat
+        ///     Converted PCM WaveFormat
         /// </summary>
-        public WaveFormat OutputFormat { get { return pcmFormat; } }
+        public WaveFormat OutputFormat
+        {
+            get { return pcmFormat; }
+        }
 
         /// <summary>
-        /// Decompress a single frame of MP3
+        ///     Decompress a single frame of MP3
         /// </summary>
         public int DecompressFrame(Mp3Frame frame, byte[] dest, int destOffset)
         {
@@ -68,7 +69,7 @@ namespace NAudio.FileFormats.Mp3
             outputBuffer.StatusFlags = DmoOutputDataBufferFlags.None;
 
             // 3. Now ask the DMO for some output data
-            mp3Decoder.MediaObject.ProcessOutput(DmoProcessOutputFlags.None, 1, new[] { outputBuffer });
+            mp3Decoder.MediaObject.ProcessOutput(DmoProcessOutputFlags.None, 1, new[] {outputBuffer});
 
             if (outputBuffer.Length == 0)
             {
@@ -79,12 +80,12 @@ namespace NAudio.FileFormats.Mp3
             // 5. Now get the data out of the output buffer
             outputBuffer.RetrieveData(dest, destOffset);
             Debug.Assert(!outputBuffer.MoreDataAvailable, "have not implemented more data available yet");
-            
+
             return outputBuffer.Length;
         }
 
         /// <summary>
-        /// Alerts us that a reposition has occured so the MP3 decoder needs to reset its state
+        ///     Alerts us that a reposition has occured so the MP3 decoder needs to reset its state
         /// </summary>
         public void Reset()
         {
@@ -92,7 +93,7 @@ namespace NAudio.FileFormats.Mp3
         }
 
         /// <summary>
-        /// Dispose of this obejct and clean up resources
+        ///     Dispose of this obejct and clean up resources
         /// </summary>
         public void Dispose()
         {
@@ -102,7 +103,7 @@ namespace NAudio.FileFormats.Mp3
                 inputMediaBuffer = null;
             }
             outputBuffer.Dispose();
-            if (mp3Decoder!= null)
+            if (mp3Decoder != null)
             {
                 mp3Decoder.Dispose();
                 mp3Decoder = null;

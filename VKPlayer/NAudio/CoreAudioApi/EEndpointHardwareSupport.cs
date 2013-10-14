@@ -19,28 +19,29 @@
      misrepresented as being the original source code.
   3. This notice may not be removed or altered from any source distribution.
 */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Endpoint Hardware Support
+    ///     Endpoint Hardware Support
     /// </summary>
     [Flags]
     public enum EEndpointHardwareSupport
     {
         /// <summary>
-        /// Volume
+        ///     Volume
         /// </summary>
         Volume = 0x00000001,
+
         /// <summary>
-        /// Mute
+        ///     Mute
         /// </summary>
         Mute = 0x00000002,
+
         /// <summary>
-        /// Meter
+        ///     Meter
         /// </summary>
         Meter = 0x00000004
     }

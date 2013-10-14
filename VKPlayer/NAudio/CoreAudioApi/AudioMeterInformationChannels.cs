@@ -19,23 +19,26 @@
      misrepresented as being the original source code.
   3. This notice may not be removed or altered from any source distribution.
 */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
+
 using System.Runtime.InteropServices;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Meter Information Channels
+    ///     Audio Meter Information Channels
     /// </summary>
     public class AudioMeterInformationChannels
     {
-        IAudioMeterInformation _AudioMeterInformation;
+        private readonly IAudioMeterInformation _AudioMeterInformation;
+
+        internal AudioMeterInformationChannels(IAudioMeterInformation parent)
+        {
+            _AudioMeterInformation = parent;
+        }
 
         /// <summary>
-        /// Metering Channel Count
+        ///     Metering Channel Count
         /// </summary>
         public int Count
         {
@@ -48,7 +51,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Get Peak value
+        ///     Get Peak value
         /// </summary>
         /// <param name="index">Channel index</param>
         /// <returns>Peak value</returns>
@@ -56,17 +59,13 @@ namespace NAudio.CoreAudioApi
         {
             get
             {
-                float[] peakValues = new float[Count];
+                var peakValues = new float[Count];
                 GCHandle Params = GCHandle.Alloc(peakValues, GCHandleType.Pinned);
-                Marshal.ThrowExceptionForHR(_AudioMeterInformation.GetChannelsPeakValues(peakValues.Length, Params.AddrOfPinnedObject()));
+                Marshal.ThrowExceptionForHR(_AudioMeterInformation.GetChannelsPeakValues(peakValues.Length,
+                    Params.AddrOfPinnedObject()));
                 Params.Free();
                 return peakValues[index];
             }
-        }
-
-        internal AudioMeterInformationChannels(IAudioMeterInformation parent)
-        {
-            _AudioMeterInformation = parent;
         }
     }
 }

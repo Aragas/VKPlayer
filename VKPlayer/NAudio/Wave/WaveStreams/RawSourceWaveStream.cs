@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// WaveStream that simply passes on data from its source stream
-    /// (e.g. a MemoryStream)
+    ///     WaveStream that simply passes on data from its source stream
+    ///     (e.g. a MemoryStream)
     /// </summary>
     public class RawSourceWaveStream : WaveStream
     {
-        private Stream sourceStream;
-        private WaveFormat waveFormat;
+        private readonly Stream sourceStream;
+        private readonly WaveFormat waveFormat;
 
         /// <summary>
-        /// Initialises a new instance of RawSourceWaveStream
+        ///     Initialises a new instance of RawSourceWaveStream
         /// </summary>
         /// <param name="sourceStream">The source stream containing raw audio</param>
         /// <param name="waveFormat">The waveformat of the audio in the source stream</param>
@@ -26,38 +23,32 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// The WaveFormat of this stream
+        ///     The WaveFormat of this stream
         /// </summary>
         public override WaveFormat WaveFormat
         {
-            get { return this.waveFormat; }
+            get { return waveFormat; }
         }
 
         /// <summary>
-        /// The length in bytes of this stream (if supported)
+        ///     The length in bytes of this stream (if supported)
         /// </summary>
         public override long Length
         {
-            get { return this.sourceStream.Length; }
+            get { return sourceStream.Length; }
         }
 
         /// <summary>
-        /// The current position in this stream
+        ///     The current position in this stream
         /// </summary>
         public override long Position
         {
-            get
-            {
-                return this.sourceStream.Position;
-            }
-            set
-            {
-                this.sourceStream.Position = value;
-            }
+            get { return sourceStream.Position; }
+            set { sourceStream.Position = value; }
         }
 
         /// <summary>
-        /// Reads data from the stream
+        ///     Reads data from the stream
         /// </summary>
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -65,4 +56,3 @@ namespace NAudio.Wave
         }
     }
 }
-

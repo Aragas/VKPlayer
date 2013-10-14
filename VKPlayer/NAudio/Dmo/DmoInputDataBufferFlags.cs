@@ -1,29 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Dmo
 {
     /// <summary>
-    /// DMO Input Data Buffer Flags
+    ///     DMO Input Data Buffer Flags
     /// </summary>
     [Flags]
     public enum DmoInputDataBufferFlags
     {
         /// <summary>
-        /// None
+        ///     None
         /// </summary>
         None,
+
         /// <summary>
-        /// DMO_INPUT_DATA_BUFFERF_SYNCPOINT
+        ///     DMO_INPUT_DATA_BUFFERF_SYNCPOINT
         /// </summary>
         SyncPoint = 0x00000001,
+
         /// <summary>
-        /// DMO_INPUT_DATA_BUFFERF_TIME
+        ///     DMO_INPUT_DATA_BUFFERF_TIME
         /// </summary>
         Time = 0x00000002,
+
         /// <summary>
-        /// DMO_INPUT_DATA_BUFFERF_TIMELENGTH
+        ///     DMO_INPUT_DATA_BUFFERF_TIMELENGTH
         /// </summary>
         TimeLength = 0x00000004
     }

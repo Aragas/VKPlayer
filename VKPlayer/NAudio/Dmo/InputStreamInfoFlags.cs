@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Dmo
 {
     [Flags]
-    enum InputStreamInfoFlags
+    internal enum InputStreamInfoFlags
     {
         None,
         DMO_INPUT_STREAMF_WHOLE_SAMPLES = 0x00000001,

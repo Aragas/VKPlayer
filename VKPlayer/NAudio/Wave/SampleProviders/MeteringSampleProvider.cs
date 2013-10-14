@@ -1,59 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Wave.SampleProviders
 {
     /// <summary>
-    /// Simple SampleProvider that passes through audio unchanged and raises
-    /// an event every n samples with the maximum sample value from the period
-    /// for metering purposes
+    ///     Simple SampleProvider that passes through audio unchanged and raises
+    ///     an event every n samples with the maximum sample value from the period
+    ///     for metering purposes
     /// </summary>
     public class MeteringSampleProvider : ISampleProvider
     {
-        private ISampleProvider source;
-
-        private float[] maxSamples;
+        private readonly StreamVolumeEventArgs args;
+        private readonly int channels;
+        private readonly float[] maxSamples;
+        private readonly ISampleProvider source;
         private int sampleCount;
-        private int channels;
-        private StreamVolumeEventArgs args;
 
         /// <summary>
-        /// Number of Samples per notification
-        /// </summary>
-        public int SamplesPerNotification { get; set; }
-
-        /// <summary>
-        /// Raised periodically to inform the user of the max volume
-        /// </summary>
-        public event EventHandler<StreamVolumeEventArgs> StreamVolume;
-
-        /// <summary>
-        /// Initialises a new instance of MeteringSampleProvider that raises 10 stream volume
-        /// events per second
+        ///     Initialises a new instance of MeteringSampleProvider that raises 10 stream volume
+        ///     events per second
         /// </summary>
         /// <param name="source">Source sample provider</param>
         public MeteringSampleProvider(ISampleProvider source) :
-            this(source, source.WaveFormat.SampleRate / 10)
+            this(source, source.WaveFormat.SampleRate/10)
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of MeteringSampleProvider 
+        ///     Initialises a new instance of MeteringSampleProvider
         /// </summary>
         /// <param name="source">source sampler provider</param>
         /// <param name="samplesPerNotification">Number of samples between notifications</param>
         public MeteringSampleProvider(ISampleProvider source, int samplesPerNotification)
         {
             this.source = source;
-            this.channels = source.WaveFormat.Channels;
-            this.maxSamples = new float[channels];
-            this.SamplesPerNotification = samplesPerNotification;
-            this.args = new StreamVolumeEventArgs() { MaxSampleValues = this.maxSamples }; // create objects up front giving GC little to do
+            channels = source.WaveFormat.Channels;
+            maxSamples = new float[channels];
+            SamplesPerNotification = samplesPerNotification;
+            args = new StreamVolumeEventArgs {MaxSampleValues = maxSamples};
+            // create objects up front giving GC little to do
         }
 
         /// <summary>
-        /// The WaveFormat of this sample provider
+        ///     Number of Samples per notification
+        /// </summary>
+        public int SamplesPerNotification { get; set; }
+
+        /// <summary>
+        ///     The WaveFormat of this sample provider
         /// </summary>
         public WaveFormat WaveFormat
         {
@@ -61,7 +54,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Reads samples from this Sample Provider
+        ///     Reads samples from this Sample Provider
         /// </summary>
         /// <param name="buffer">Sample buffer</param>
         /// <param name="offset">Offset into sample buffer</param>
@@ -92,15 +85,20 @@ namespace NAudio.Wave.SampleProviders
             }
             return samplesRead;
         }
+
+        /// <summary>
+        ///     Raised periodically to inform the user of the max volume
+        /// </summary>
+        public event EventHandler<StreamVolumeEventArgs> StreamVolume;
     }
 
     /// <summary>
-    /// Event args for aggregated stream volume
+    ///     Event args for aggregated stream volume
     /// </summary>
     public class StreamVolumeEventArgs : EventArgs
     {
         /// <summary>
-        /// Max sample values array (one for each channel)
+        ///     Max sample values array (one for each channel)
         /// </summary>
         public float[] MaxSampleValues { get; set; }
     }

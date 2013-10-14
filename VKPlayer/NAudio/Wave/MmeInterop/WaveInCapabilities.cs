@@ -1,68 +1,66 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// WaveInCapabilities structure (based on WAVEINCAPS from mmsystem.h)
-    /// http://msdn.microsoft.com/en-us/library/ms713726(VS.85).aspx
+    ///     WaveInCapabilities structure (based on WAVEINCAPS from mmsystem.h)
+    ///     http://msdn.microsoft.com/en-us/library/ms713726(VS.85).aspx
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct WaveInCapabilities
     {
         /// <summary>
-        /// wMid
+        ///     wMid
         /// </summary>
-        private short manufacturerId;
+        private readonly short manufacturerId;
+
         /// <summary>
-        /// wPid
+        ///     wPid
         /// </summary>
-        private short productId;
+        private readonly short productId;
+
         /// <summary>
-        /// vDriverVersion
+        ///     vDriverVersion
         /// </summary>
-        private int driverVersion;
+        private readonly int driverVersion;
+
         /// <summary>
-        /// Product Name (szPname)
+        ///     Product Name (szPname)
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxProductNameLength)]
-        private string productName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxProductNameLength)] private readonly string productName;
+
         /// <summary>
-        /// Supported formats (bit flags) dwFormats 
+        ///     Supported formats (bit flags) dwFormats
         /// </summary>
-        private SupportedWaveFormat supportedFormats;
+        private readonly SupportedWaveFormat supportedFormats;
+
         /// <summary>
-        /// Supported channels (1 for mono 2 for stereo) (wChannels)
-        /// Seems to be set to -1 on a lot of devices
+        ///     Supported channels (1 for mono 2 for stereo) (wChannels)
+        ///     Seems to be set to -1 on a lot of devices
         /// </summary>
-        private short channels;
+        private readonly short channels;
+
         /// <summary>
-        /// wReserved1
+        ///     wReserved1
         /// </summary>
-        private short reserved;
+        private readonly short reserved;
 
         private const int MaxProductNameLength = 32;
 
         /// <summary>
-        /// Number of channels supported
+        ///     Number of channels supported
         /// </summary>
         public int Channels
         {
-            get
-            {
-                return channels;
-            }
+            get { return channels; }
         }
 
         /// <summary>
-        /// The product name
+        ///     The product name
         /// </summary>
         public string ProductName
         {
-            get
-            {
-                return productName;
-            }
+            get { return productName; }
         }
     }
 }

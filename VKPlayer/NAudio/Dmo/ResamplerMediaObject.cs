@@ -1,74 +1,67 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi.Interfaces;
-using NAudio.Utils;
 
 namespace NAudio.Dmo
 {
     /// <summary>
-    /// From wmcodecsdp.h
-    /// Implements:
-    /// - IMediaObject 
-    /// - IMFTransform (Media foundation - we will leave this for now as there is loads of MF stuff)
-    /// - IPropertyStore 
-    /// - IWMResamplerProps 
-    /// Can resample PCM or IEEE
+    ///     From wmcodecsdp.h
+    ///     Implements:
+    ///     - IMediaObject
+    ///     - IMFTransform (Media foundation - we will leave this for now as there is loads of MF stuff)
+    ///     - IPropertyStore
+    ///     - IWMResamplerProps
+    ///     Can resample PCM or IEEE
     /// </summary>
     [ComImport, Guid("f447b69e-1884-4a7e-8055-346f74d6edb3")]
-    class ResamplerMediaComObject
+    internal class ResamplerMediaComObject
     {
     }
 
     /// <summary>
-    /// Resampler
+    ///     Resampler
     /// </summary>
     public class Resampler : IDisposable
     {
-        MediaObject mediaObject;
-        IPropertyStore propertyStoreInterface;
-        IWMResamplerProps resamplerPropsInterface;
-        ResamplerMediaComObject mediaComObject;
+        private ResamplerMediaComObject mediaComObject;
+        private MediaObject mediaObject;
+        private IPropertyStore propertyStoreInterface;
+        private IWMResamplerProps resamplerPropsInterface;
 
         /// <summary>
-        /// Creates a new Resampler based on the DMO Resampler
+        ///     Creates a new Resampler based on the DMO Resampler
         /// </summary>
         public Resampler()
         {
             mediaComObject = new ResamplerMediaComObject();
-            mediaObject = new MediaObject((IMediaObject)mediaComObject);
-            propertyStoreInterface = (IPropertyStore)mediaComObject;
-            resamplerPropsInterface = (IWMResamplerProps)mediaComObject;
+            mediaObject = new MediaObject((IMediaObject) mediaComObject);
+            propertyStoreInterface = (IPropertyStore) mediaComObject;
+            resamplerPropsInterface = (IWMResamplerProps) mediaComObject;
         }
 
         /// <summary>
-        /// Media Object
+        ///     Media Object
         /// </summary>
         public MediaObject MediaObject
         {
-            get
-            {
-                return mediaObject;
-            }
+            get { return mediaObject; }
         }
-
 
         #region IDisposable Members
 
         /// <summary>
-        /// Dispose code - experimental at the moment
-        /// Was added trying to track down why Resampler crashes NUnit
-        /// This code not currently being called by ResamplerDmoStream
+        ///     Dispose code - experimental at the moment
+        ///     Was added trying to track down why Resampler crashes NUnit
+        ///     This code not currently being called by ResamplerDmoStream
         /// </summary>
         public void Dispose()
         {
-            if(propertyStoreInterface != null)
+            if (propertyStoreInterface != null)
             {
                 Marshal.ReleaseComObject(propertyStoreInterface);
                 propertyStoreInterface = null;
             }
-            if(resamplerPropsInterface != null)
+            if (resamplerPropsInterface != null)
             {
                 Marshal.ReleaseComObject(resamplerPropsInterface);
                 resamplerPropsInterface = null;

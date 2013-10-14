@@ -20,34 +20,37 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 // modified for NAudio
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
 using System.Runtime.InteropServices;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// MM Device
+    ///     MM Device
     /// </summary>
     public class MMDevice
     {
         #region Variables
-        private IMMDevice deviceInterface;
-        private PropertyStore _PropertyStore;
-        private AudioMeterInformation _AudioMeterInformation;
+
+        private readonly IMMDevice deviceInterface;
         private AudioEndpointVolume _AudioEndpointVolume;
+        private AudioMeterInformation _AudioMeterInformation;
+        private PropertyStore _PropertyStore;
 
         #endregion
 
         #region Guids
+
         private static Guid IID_IAudioMeterInformation = new Guid("C02216F6-8C67-4B5B-9D00-D008E73E0064");
         private static Guid IID_IAudioEndpointVolume = new Guid("5CDF2C82-841E-4546-9722-0CF74078229A");
         private static Guid IID_IAudioClient = new Guid("1CB9AD4C-DBFA-4c32-B178-C2F568A703B2");
+
         #endregion
 
         #region Init
+
         private void GetPropertyInformation()
         {
             IPropertyStore propstore;
@@ -58,21 +61,24 @@ namespace NAudio.CoreAudioApi
         private AudioClient GetAudioClient()
         {
             object result;
-            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioClient, ClsCtx.ALL, IntPtr.Zero, out result));
+            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioClient, ClsCtx.ALL, IntPtr.Zero,
+                out result));
             return new AudioClient(result as IAudioClient);
         }
 
         private void GetAudioMeterInformation()
         {
             object result;
-            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioMeterInformation, ClsCtx.ALL, IntPtr.Zero, out result));
+            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioMeterInformation, ClsCtx.ALL, IntPtr.Zero,
+                out result));
             _AudioMeterInformation = new AudioMeterInformation(result as IAudioMeterInformation);
         }
 
         private void GetAudioEndpointVolume()
         {
             object result;
-            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioEndpointVolume, ClsCtx.ALL, IntPtr.Zero, out result));
+            Marshal.ThrowExceptionForHR(deviceInterface.Activate(ref IID_IAudioEndpointVolume, ClsCtx.ALL, IntPtr.Zero,
+                out result));
             _AudioEndpointVolume = new AudioEndpointVolume(result as IAudioEndpointVolume);
         }
 
@@ -81,7 +87,7 @@ namespace NAudio.CoreAudioApi
         #region Properties
 
         /// <summary>
-        /// Audio Client
+        ///     Audio Client
         /// </summary>
         public AudioClient AudioClient
         {
@@ -94,7 +100,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Audio Meter Information
+        ///     Audio Meter Information
         /// </summary>
         public AudioMeterInformation AudioMeterInformation
         {
@@ -108,7 +114,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Audio Endpoint Volume
+        ///     Audio Endpoint Volume
         /// </summary>
         public AudioEndpointVolume AudioEndpointVolume
         {
@@ -122,7 +128,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Properties
+        ///     Properties
         /// </summary>
         public PropertyStore Properties
         {
@@ -135,7 +141,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Friendly name for the endpoint
+        ///     Friendly name for the endpoint
         /// </summary>
         public string FriendlyName
         {
@@ -147,16 +153,15 @@ namespace NAudio.CoreAudioApi
                 }
                 if (_PropertyStore.Contains(PropertyKeys.PKEY_Device_FriendlyName))
                 {
-                    return (string)_PropertyStore[PropertyKeys.PKEY_Device_FriendlyName].Value;
+                    return (string) _PropertyStore[PropertyKeys.PKEY_Device_FriendlyName].Value;
                 }
-                else
-                    return "Unknown";
+                return "Unknown";
             }
         }
 
-       /// <summary>
-       /// Friendly name of device
-       /// </summary>
+        /// <summary>
+        ///     Friendly name of device
+        /// </summary>
         public string DeviceFriendlyName
         {
             get
@@ -167,17 +172,14 @@ namespace NAudio.CoreAudioApi
                 }
                 if (_PropertyStore.Contains(PropertyKeys.PKEY_DeviceInterface_FriendlyName))
                 {
-                    return (string)_PropertyStore[PropertyKeys.PKEY_DeviceInterface_FriendlyName].Value;
+                    return (string) _PropertyStore[PropertyKeys.PKEY_DeviceInterface_FriendlyName].Value;
                 }
-                else
-                {
-                    return "Unknown";
-                }
+                return "Unknown";
             }
         }
 
         /// <summary>
-        /// Device ID
+        ///     Device ID
         /// </summary>
         public string ID
         {
@@ -190,21 +192,21 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Data Flow
+        ///     Data Flow
         /// </summary>
         public DataFlow DataFlow
         {
             get
             {
                 DataFlow Result;
-                IMMEndpoint ep = deviceInterface as IMMEndpoint;
+                var ep = deviceInterface as IMMEndpoint;
                 ep.GetDataFlow(out Result);
                 return Result;
             }
         }
 
         /// <summary>
-        /// Device State
+        ///     Device State
         /// </summary>
         public DeviceState State
         {
@@ -215,22 +217,24 @@ namespace NAudio.CoreAudioApi
                 return Result;
             }
         }
+
         #endregion
 
         #region Constructor
+
         internal MMDevice(IMMDevice realDevice)
         {
             deviceInterface = realDevice;
         }
+
         #endregion
 
         /// <summary>
-        /// To string
+        ///     To string
         /// </summary>
         public override string ToString()
         {
             return FriendlyName;
         }
-
     }
 }

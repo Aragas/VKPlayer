@@ -3,24 +3,33 @@
 namespace NAudio.Wave.SampleProviders
 {
     /// <summary>
-    /// Allows you to:
-    /// 1. insert a pre-delay of silence before the source begins
-    /// 2. optionally skip over a certain amount of the source
-    /// 3. optionally take only a set amount 
-    /// 4. 
+    ///     Allows you to:
+    ///     1. insert a pre-delay of silence before the source begins
+    ///     2. optionally skip over a certain amount of the source
+    ///     3. optionally take only a set amount
+    ///     4.
     /// </summary>
     public class OffsetSampleProvider : ISampleProvider
     {
         private readonly ISampleProvider _sourceProvider;
+        private int _delayBySamples;
+        private int _leadOutSamples;
         private int _phase; // 0 = not started yet, 1 = delay, 2 = skip, 3 = take, 4 = lead_out, 5 = end
         private int _phasePos;
-        private int _delayBySamples;
         private int _skipOverSamples;
         private int _takeSamples;
-        private int _leadOutSamples;
 
         /// <summary>
-        /// Number of samples of silence to insert before playing source
+        ///     Creates a new instance of offsetSampleProvider
+        /// </summary>
+        /// <param name="sourceProvider">The Source Sample Provider to read from</param>
+        public OffsetSampleProvider(ISampleProvider sourceProvider)
+        {
+            _sourceProvider = sourceProvider;
+        }
+
+        /// <summary>
+        ///     Number of samples of silence to insert before playing source
         /// </summary>
         public int DelayBySamples
         {
@@ -28,10 +37,10 @@ namespace NAudio.Wave.SampleProviders
             set
             {
                 if (_phase != 0)
-                { 
+                {
                     throw new InvalidOperationException("Can't set DelayBySamples after calling Read");
                 }
-                if (value % WaveFormat.Channels != 0)
+                if (value%WaveFormat.Channels != 0)
                 {
                     throw new ArgumentException("DelayBySamples must be a multiple of WaveFormat.Channels");
                 }
@@ -40,7 +49,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Number of samples in source to discard
+        ///     Number of samples in source to discard
         /// </summary>
         public int SkipOverSamples
         {
@@ -51,7 +60,7 @@ namespace NAudio.Wave.SampleProviders
                 {
                     throw new InvalidOperationException("Can't set SkipOverSamples after calling Read");
                 }
-                if (value % WaveFormat.Channels != 0)
+                if (value%WaveFormat.Channels != 0)
                 {
                     throw new ArgumentException("SkipOverSamples must be a multiple of WaveFormat.Channels");
                 }
@@ -60,7 +69,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Number of samples to read from source (if 0, then read it all)
+        ///     Number of samples to read from source (if 0, then read it all)
         /// </summary>
         public int TakeSamples
         {
@@ -71,7 +80,7 @@ namespace NAudio.Wave.SampleProviders
                 {
                     throw new InvalidOperationException("Can't set TakeSamples after calling Read");
                 }
-                if (value % WaveFormat.Channels != 0)
+                if (value%WaveFormat.Channels != 0)
                 {
                     throw new ArgumentException("TakeSamples must be a multiple of WaveFormat.Channels");
                 }
@@ -80,7 +89,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Number of samples of silence to insert after playing source
+        ///     Number of samples of silence to insert after playing source
         /// </summary>
         public int LeadOutSamples
         {
@@ -91,7 +100,7 @@ namespace NAudio.Wave.SampleProviders
                 {
                     throw new InvalidOperationException("Can't set LeadOutSamples after calling Read");
                 }
-                if (value % WaveFormat.Channels != 0)
+                if (value%WaveFormat.Channels != 0)
                 {
                     throw new ArgumentException("LeadOutSamples must be a multiple of WaveFormat.Channels");
                 }
@@ -100,16 +109,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Creates a new instance of offsetSampleProvider
-        /// </summary>
-        /// <param name="sourceProvider">The Source Sample Provider to read from</param>
-        public OffsetSampleProvider(ISampleProvider sourceProvider)
-        {
-            _sourceProvider = sourceProvider;
-        }
-
-        /// <summary>
-        /// The WaveFormat of this SampleProvider
+        ///     The WaveFormat of this SampleProvider
         /// </summary>
         public WaveFormat WaveFormat
         {
@@ -117,7 +117,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Reads from this sample provider
+        ///     Reads from this sample provider
         /// </summary>
         /// <param name="buffer">Sample buffer</param>
         /// <param name="offset">Offset within sample buffer to read to</param>
@@ -152,13 +152,13 @@ namespace NAudio.Wave.SampleProviders
             {
                 if (SkipOverSamples > 0)
                 {
-                    var skipBuffer = new float[WaveFormat.SampleRate * WaveFormat.Channels];
+                    var skipBuffer = new float[WaveFormat.SampleRate*WaveFormat.Channels];
                     // skip everything
                     int samplesSkipped = 0;
                     while (samplesSkipped < SkipOverSamples)
                     {
                         int samplesRequired = Math.Min(SkipOverSamples - samplesSkipped, skipBuffer.Length);
-                        var read = _sourceProvider.Read(skipBuffer, 0, samplesRequired);
+                        int read = _sourceProvider.Read(skipBuffer, 0, samplesRequired);
                         if (read == 0) // source has ended while still in skip
                         {
                             break;

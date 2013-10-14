@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// PROPERTYKEY is defined in wtypes.h
+    ///     PROPERTYKEY is defined in wtypes.h
     /// </summary>
     public struct PropertyKey
     {
         /// <summary>
-        /// Format ID
+        ///     Format ID
         /// </summary>
         public Guid formatId;
+
         /// <summary>
-        /// Property ID
+        ///     Property ID
         /// </summary>
         public int propertyId;
+
         /// <summary>
-        /// <param name="formatId"></param>
-        /// <param name="propertyId"></param>
+        ///     <param name="formatId"></param>
+        ///     <param name="propertyId"></param>
         /// </summary>
         public PropertyKey(Guid formatId, int propertyId)
         {

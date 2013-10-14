@@ -1,29 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NAudio.Wave.SampleProviders
+﻿namespace NAudio.Wave.SampleProviders
 {
     /// <summary>
-    /// Very simple sample provider supporting adjustable gain
+    ///     Very simple sample provider supporting adjustable gain
     /// </summary>
     public class VolumeSampleProvider : ISampleProvider
     {
-        private ISampleProvider source;
+        private readonly ISampleProvider source;
         private float volume;
 
         /// <summary>
-        /// Initializes a new instance of VolumeSampleProvider
+        ///     Initializes a new instance of VolumeSampleProvider
         /// </summary>
         /// <param name="source">Source Sample Provider</param>
         public VolumeSampleProvider(ISampleProvider source)
         {
             this.source = source;
-            this.volume = 1.0f;
+            volume = 1.0f;
         }
 
         /// <summary>
-        /// WaveFormat
+        ///     Allows adjusting the volume, 1.0f = full volume
+        /// </summary>
+        public float Volume
+        {
+            get { return volume; }
+            set { volume = value; }
+        }
+
+        /// <summary>
+        ///     WaveFormat
         /// </summary>
         public WaveFormat WaveFormat
         {
@@ -31,7 +36,7 @@ namespace NAudio.Wave.SampleProviders
         }
 
         /// <summary>
-        /// Reads samples from this sample provider
+        ///     Reads samples from this sample provider
         /// </summary>
         /// <param name="buffer">Sample buffer</param>
         /// <param name="offset">Offset into sample buffer</param>
@@ -48,15 +53,6 @@ namespace NAudio.Wave.SampleProviders
                 }
             }
             return samplesRead;
-        }
-
-        /// <summary>
-        /// Allows adjusting the volume, 1.0f = full volume
-        /// </summary>
-        public float Volume
-        {
-            get { return volume; }
-            set { volume = value; }
         }
     }
 }

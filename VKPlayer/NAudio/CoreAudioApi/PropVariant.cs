@@ -20,49 +20,49 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 // adapted for use in NAudio
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
+using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
 namespace NAudio.CoreAudioApi.Interfaces
 {
     /// <summary>
-    /// from Propidl.h.
-    /// http://msdn.microsoft.com/en-us/library/aa380072(VS.85).aspx
-    /// contains a union so we have to do an explicit layout
+    ///     from Propidl.h.
+    ///     http://msdn.microsoft.com/en-us/library/aa380072(VS.85).aspx
+    ///     contains a union so we have to do an explicit layout
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     public struct PropVariant
     {
-        [FieldOffset(0)] short vt;
-        [FieldOffset(2)] short wReserved1;
-        [FieldOffset(4)] short wReserved2;
-        [FieldOffset(6)] short wReserved3;
-        [FieldOffset(8)] sbyte cVal;
-        [FieldOffset(8)] byte bVal;
-        [FieldOffset(8)] short iVal;
-        [FieldOffset(8)] ushort uiVal;
-        [FieldOffset(8)] int lVal;
-        [FieldOffset(8)] uint ulVal;
-        [FieldOffset(8)] int intVal;
-        [FieldOffset(8)] uint uintVal;
-        [FieldOffset(8)] long hVal;
-        [FieldOffset(8)] long uhVal;
-        [FieldOffset(8)] float fltVal;
-        [FieldOffset(8)] double dblVal;
-        [FieldOffset(8)] bool boolVal;
-        [FieldOffset(8)] int scode;
+        [FieldOffset(0)] private readonly short vt;
+        [FieldOffset(2)] private readonly short wReserved1;
+        [FieldOffset(4)] private readonly short wReserved2;
+        [FieldOffset(6)] private readonly short wReserved3;
+        [FieldOffset(8)] private readonly sbyte cVal;
+        [FieldOffset(8)] private readonly byte bVal;
+        [FieldOffset(8)] private readonly short iVal;
+        [FieldOffset(8)] private readonly ushort uiVal;
+        [FieldOffset(8)] private readonly int lVal;
+        [FieldOffset(8)] private readonly uint ulVal;
+        [FieldOffset(8)] private readonly int intVal;
+        [FieldOffset(8)] private readonly uint uintVal;
+        [FieldOffset(8)] private readonly long hVal;
+        [FieldOffset(8)] private readonly long uhVal;
+        [FieldOffset(8)] private readonly float fltVal;
+        [FieldOffset(8)] private readonly double dblVal;
+        [FieldOffset(8)] private readonly bool boolVal;
+        [FieldOffset(8)] private readonly int scode;
         //CY cyVal;
-        [FieldOffset(8)] DateTime date;
-        [FieldOffset(8)] System.Runtime.InteropServices.ComTypes.FILETIME filetime;
+        [FieldOffset(8)] private readonly DateTime date;
+        [FieldOffset(8)] private readonly FILETIME filetime;
         //CLSID* puuid;
         //CLIPDATA* pclipdata;
         //BSTR bstrVal;
         //BSTRBLOB bstrblobVal;
-        [FieldOffset(8)] Blob blobVal;
+        [FieldOffset(8)] private Blob blobVal;
         //LPSTR pszVal;
-        [FieldOffset(8)] IntPtr pwszVal; //LPWSTR 
+        [FieldOffset(8)] private readonly IntPtr pwszVal; //LPWSTR 
         //IUnknown* punkVal;
         /*IDispatch* pdispVal;
         IStream* pStream;
@@ -114,23 +114,23 @@ namespace NAudio.CoreAudioApi.Interfaces
         */
 
         /// <summary>
-        /// Helper method to gets blob data
+        ///     Helper method to gets blob data
         /// </summary>
-        byte[] GetBlob()
+        private byte[] GetBlob()
         {
-            byte[] Result = new byte[blobVal.Length];
+            var Result = new byte[blobVal.Length];
             Marshal.Copy(blobVal.Data, Result, 0, Result.Length);
             return Result;
         }
 
         /// <summary>
-        /// Property value
+        ///     Property value
         /// </summary>
         public object Value
         {
             get
             {
-                VarEnum ve = (VarEnum)vt;
+                var ve = (VarEnum) vt;
                 switch (ve)
                 {
                     case VarEnum.VT_I1:
@@ -150,7 +150,7 @@ namespace NAudio.CoreAudioApi.Interfaces
                     case VarEnum.VT_BLOB:
                         return GetBlob();
                 }
-                throw new NotImplementedException("PropVariant " + ve.ToString());
+                throw new NotImplementedException("PropVariant " + ve);
             }
         }
     }

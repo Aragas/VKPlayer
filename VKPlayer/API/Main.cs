@@ -1,72 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using VKPlayer;
+using Rainmeter.AudioPlayer;
 
-namespace Rainmeter
+namespace Rainmeter.API
 {
     internal class Measure
     {
+        private AudioPlayer _type;
 
-        enum AudioPlayer
-        {
-            Status,
-            Artist,
-            Title,
-            Duration,
-            Position,
-            State,
-            Repeat,
-            Shuffle,
-            Volume,
-            Progress
-        }
-        AudioPlayer Type;
-
-        internal Measure()
-        {
-        }
-
-        internal void Reload(Rainmeter.API rm, ref double maxValue)
+        internal void Reload(API rm, ref double maxValue)
         {
             string type = rm.ReadString("PlayerType", "");
             switch (type.ToLowerInvariant())
             {
                 case "status":
-                    Type = AudioPlayer.Status;
+                    _type = AudioPlayer.Status;
                     break;
                 case "state":
-                    Type = AudioPlayer.State;
+                    _type = AudioPlayer.State;
                     break;
                 case "artist":
-                    Type = AudioPlayer.Artist;
+                    _type = AudioPlayer.Artist;
                     break;
                 case "title":
-                    Type = AudioPlayer.Title;
+                    _type = AudioPlayer.Title;
                     break;
                 case "duration":
-                    Type = AudioPlayer.Duration;
+                    _type = AudioPlayer.Duration;
                     break;
                 case "position":
-                    Type = AudioPlayer.Position;
+                    _type = AudioPlayer.Position;
                     break;
                 case "repeat":
-                    Type = AudioPlayer.Repeat;
+                    _type = AudioPlayer.Repeat;
                     break;
                 case "shuffle":
-                    Type = AudioPlayer.Shuffle;
+                    _type = AudioPlayer.Shuffle;
                     break;
                 case "volume":
-                    Type = AudioPlayer.Volume;
+                    _type = AudioPlayer.Volume;
                     break;
                 case "progress":
-                    Type = AudioPlayer.Progress;
+                    _type = AudioPlayer.Progress;
                     break;
                 default:
                     API.Log(API.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
                     break;
             }
-
         }
 
         internal void Initialize()
@@ -75,7 +55,7 @@ namespace Rainmeter
 
         internal double Update()
         {
-            switch (Type)
+            switch (_type)
             {
                 case AudioPlayer.Duration:
                     return Player.Duration;
@@ -89,11 +69,11 @@ namespace Rainmeter
 
                 case AudioPlayer.Repeat:
                     if (Player.Repeat) return 0.0;
-                    else return 1.0;
+                    return 1.0;
 
                 case AudioPlayer.Shuffle:
                     if (Player.Shuffle) return 0.0;
-                    else return 1.0;
+                    return 1.0;
 
                 case AudioPlayer.Progress:
                     return Player.Progress;
@@ -103,29 +83,40 @@ namespace Rainmeter
 
         internal string GetString()
         {
-            switch (Type)
+            switch (_type)
             {
                 case AudioPlayer.Status:
                     return "VKPlayer by Aragas (Aragasas)";
 
                 case AudioPlayer.Artist:
                     if (Player.Artist == null) return "Not Authorized";
-                    else return Player.Artist;
+                    return Player.Artist;
 
                 case AudioPlayer.Title:
                     if (Player.Title == null) return "Click Play";
-                    else return Player.Title;
-
+                    return Player.Title;
             }
             return null;
         }
 
-        internal void ExecuteBang(string Command)
+        internal void ExecuteBang(string сommand)
         {
-            Verification.StartExecute(Command);
-            return;
+            Verification.StartExecute(сommand);
         }
 
+        private enum AudioPlayer
+        {
+            Status,
+            Artist,
+            Title,
+            Duration,
+            Position,
+            State,
+            Repeat,
+            Shuffle,
+            Volume,
+            Progress
+        }
     }
 
     #region Plugin
@@ -135,47 +126,47 @@ namespace Rainmeter
         internal static Dictionary<uint, Measure> Measures = new Dictionary<uint, Measure>();
 
         [DllExport]
-        public unsafe static void Initialize(void** data, void* rm)
+        public static unsafe void Initialize(void** data, void* rm)
         {
-            uint id = (uint)((void*)*data);
+            var id = (uint) *data;
             Measures.Add(id, new Measure());
         }
 
         [DllExport]
-        public unsafe static void Finalize(void* data)
+        public static unsafe void Finalize(void* data)
         {
-            uint id = (uint)data;
+            var id = (uint) data;
             Measures.Remove(id);
         }
 
         [DllExport]
-        public unsafe static void Reload(void* data, void* rm, double* maxValue)
+        public static unsafe void Reload(void* data, void* rm, double* maxValue)
         {
-            uint id = (uint)data;
-            Measures[id].Reload(new Rainmeter.API((IntPtr)rm), ref *maxValue);
+            var id = (uint) data;
+            Measures[id].Reload(new API((IntPtr) rm), ref *maxValue);
         }
 
         [DllExport]
-        public unsafe static double Update(void* data)
+        public static unsafe double Update(void* data)
         {
-            uint id = (uint)data;
+            var id = (uint) data;
             return Measures[id].Update();
         }
 
         [DllExport]
-        public unsafe static char* GetString(void* data)
+        public static unsafe char* GetString(void* data)
         {
-            uint id = (uint)data;
+            var id = (uint) data;
             fixed (char* s = Measures[id].GetString()) return s;
         }
 
         [DllExport]
-        public unsafe static void ExecuteBang(void* data, char* args)
+        public static unsafe void ExecuteBang(void* data, char* args)
         {
-            uint id = (uint)data;
+            var id = (uint) data;
             Measures[id].ExecuteBang(new string(args));
         }
-
     }
+
     #endregion
 }

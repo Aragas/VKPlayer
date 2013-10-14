@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NAudio.Wave
+﻿namespace NAudio.Wave
 {
     /// <summary>
-    /// Playback State
+    ///     Playback State
     /// </summary>
     public enum PlaybackState
     {
         /// <summary>
-        /// Stopped
+        ///     Stopped
         /// </summary>
         Stopped,
+
         /// <summary>
-        /// Playing
+        ///     Playing
         /// </summary>
         Playing,
+
         /// <summary>
-        /// Paused
+        ///     Paused
         /// </summary>
         Paused
     }

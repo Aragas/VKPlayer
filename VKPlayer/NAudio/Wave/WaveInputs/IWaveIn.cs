@@ -1,36 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// Generic interface for wave recording
+    ///     Generic interface for wave recording
     /// </summary>
     public interface IWaveIn : IDisposable
     {
         /// <summary>
-        /// Recording WaveFormat
+        ///     Recording WaveFormat
         /// </summary>
         WaveFormat WaveFormat { get; set; }
 
         /// <summary>
-        /// Start Recording
+        ///     Start Recording
         /// </summary>
         void StartRecording();
 
         /// <summary>
-        /// Stop Recording
+        ///     Stop Recording
         /// </summary>
         void StopRecording();
 
         /// <summary>
-        /// Indicates recorded data is available 
+        ///     Indicates recorded data is available
         /// </summary>
         event EventHandler<WaveInEventArgs> DataAvailable;
 
         /// <summary>
-        /// Indicates that all recorded data has now been received.
+        ///     Indicates that all recorded data has now been received.
         /// </summary>
         event EventHandler<StoppedEventArgs> RecordingStopped;
     }

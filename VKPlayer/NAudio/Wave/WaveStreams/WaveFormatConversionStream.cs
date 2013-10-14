@@ -1,37 +1,23 @@
 using System;
+using System.Diagnostics;
 using NAudio.Wave.Compression;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// WaveStream that passes through an ACM Codec
+    ///     WaveStream that passes through an ACM Codec
     /// </summary>
     public class WaveFormatConversionStream : WaveStream
     {
-        private AcmStream conversionStream;
-        private WaveStream sourceStream;
-        private WaveFormat targetFormat;
-        private long length;
-        private long position;
+        private readonly long length;
+        private readonly WaveFormat targetFormat;
         private int blockAlign;
+        private AcmStream conversionStream;
+        private long position;
+        private WaveStream sourceStream;
 
         /// <summary>
-        /// Creates a stream that can convert to PCM
-        /// </summary>
-        /// <param name="sourceStream">The source stream</param>
-        /// <returns>A PCM stream</returns>
-        public static WaveStream CreatePcmStream(WaveStream sourceStream)
-        {
-            if (sourceStream.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
-            {
-                return sourceStream;
-            }
-            WaveFormat pcmFormat = AcmStream.SuggestPcmFormat(sourceStream.WaveFormat);
-            return new WaveFormatConversionStream(pcmFormat, sourceStream);
-        }
-
-        /// <summary>
-        /// Create a new WaveFormat conversion stream
+        ///     Create a new WaveFormat conversion stream
         /// </summary>
         /// <param name="targetFormat">Desired output format</param>
         /// <param name="sourceStream">Source stream</param>
@@ -44,7 +30,7 @@ namespace NAudio.Wave
             try
             {
                 // work out how many bytes the entire input stream will convert to
-                length = SourceToDest((int)sourceStream.Length);
+                length = SourceToDest((int) sourceStream.Length);
                 GetBlockAlign(targetFormat, sourceStream);
             }
             catch
@@ -53,7 +39,60 @@ namespace NAudio.Wave
                 throw;
             }
             position = 0;
+        }
 
+        /// <summary>
+        ///     Returns the stream length
+        /// </summary>
+        public override long Length
+        {
+            get { return length; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the current position in the stream
+        /// </summary>
+        public override long Position
+        {
+            get { return position; }
+            set
+            {
+                // make sure we don't get out of sync
+                value -= (value%BlockAlign);
+                sourceStream.Position = conversionStream.DestToSource((int) value);
+                position = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the WaveFormat of this stream
+        /// </summary>
+        public override WaveFormat WaveFormat
+        {
+            get { return targetFormat; }
+        }
+
+        /// <summary>
+        ///     Gets the block alignment for this stream
+        /// </summary>
+        public override int BlockAlign
+        {
+            get { return blockAlign; }
+        }
+
+        /// <summary>
+        ///     Creates a stream that can convert to PCM
+        /// </summary>
+        /// <param name="sourceStream">The source stream</param>
+        /// <returns>A PCM stream</returns>
+        public static WaveStream CreatePcmStream(WaveStream sourceStream)
+        {
+            if (sourceStream.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
+            {
+                return sourceStream;
+            }
+            WaveFormat pcmFormat = AcmStream.SuggestPcmFormat(sourceStream.WaveFormat);
+            return new WaveFormatConversionStream(pcmFormat, sourceStream);
         }
 
         private void GetBlockAlign(WaveFormat targetFormat, WaveStream sourceStream)
@@ -75,7 +114,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Converts source bytes to destination bytes
+        ///     Converts source bytes to destination bytes
         /// </summary>
         public int SourceToDest(int source)
         {
@@ -83,7 +122,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Converts destination bytes to source bytes
+        ///     Converts destination bytes to source bytes
         /// </summary>
         public int DestToSource(int dest)
         {
@@ -91,49 +130,9 @@ namespace NAudio.Wave
             return conversionStream.DestToSource(dest);
         }
 
-        /// <summary>
-        /// Returns the stream length
-        /// </summary>
-        public override long Length
-        {
-            get
-            {
-                return length;
-            }
-        }
 
         /// <summary>
-        /// Gets or sets the current position in the stream
-        /// </summary>
-        public override long Position
-        {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                // make sure we don't get out of sync
-                value -= (value % BlockAlign);
-                sourceStream.Position = conversionStream.DestToSource((int)value);
-                position = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the WaveFormat of this stream
-        /// </summary>
-        public override WaveFormat WaveFormat
-        {
-            get
-            {
-                return targetFormat;
-            }
-        }
-
-
-        /// <summary>
-        /// Reads bytes from this stream
+        ///     Reads bytes from this stream
         /// </summary>
         /// <param name="array">Buffer to read into</param>
         /// <param name="offset">Offset in array to read into</param>
@@ -142,10 +141,10 @@ namespace NAudio.Wave
         public override int Read(byte[] array, int offset, int count)
         {
             int bytesRead = 0;
-            if (count % BlockAlign != 0)
+            if (count%BlockAlign != 0)
             {
                 //throw new ApplicationException("Must read complete blocks");
-                count -= (count % BlockAlign);
+                count -= (count%BlockAlign);
             }
 
             while (bytesRead < count)
@@ -171,12 +170,12 @@ namespace NAudio.Wave
                     break;
                 }
                 int silenceBytes = 0;
-                if (sourceBytesRead % sourceStream.BlockAlign != 0)
+                if (sourceBytesRead%sourceStream.BlockAlign != 0)
                 {
                     // we have been returned something that cannot be converted - a partial
                     // buffer. We will increase the size we supposedly read, and zero out
                     // the end.
-                    sourceBytesRead -= (sourceBytesRead % sourceStream.BlockAlign);
+                    sourceBytesRead -= (sourceBytesRead%sourceStream.BlockAlign);
                     sourceBytesRead += sourceStream.BlockAlign;
                     silenceBytes = SourceToDest(sourceStream.BlockAlign);
                 }
@@ -214,7 +213,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Disposes this stream
+        ///     Disposes this stream
         /// </summary>
         /// <param name="disposing">true if the user called this</param>
         protected override void Dispose(bool disposing)
@@ -235,24 +234,12 @@ namespace NAudio.Wave
             }
             else
             {
-                System.Diagnostics.Debug.Assert(false, "WaveFormatConversionStream was not disposed");
+                Debug.Assert(false, "WaveFormatConversionStream was not disposed");
             }
             // Release unmanaged resources.
             // Set large fields to null.
             // Call Dispose on your base class.
             base.Dispose(disposing);
         }
-
-        /// <summary>
-        /// Gets the block alignment for this stream
-        /// </summary>
-        public override int BlockAlign
-        {
-            get
-            {
-                return blockAlign;
-            }
-        }
-
     }
 }

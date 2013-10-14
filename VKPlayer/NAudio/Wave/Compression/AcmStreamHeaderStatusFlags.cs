@@ -1,22 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Wave.Compression
 {
     [Flags]
-    enum AcmStreamHeaderStatusFlags
+    internal enum AcmStreamHeaderStatusFlags
     {
         /// <summary>
-        /// ACMSTREAMHEADER_STATUSF_DONE
+        ///     ACMSTREAMHEADER_STATUSF_DONE
         /// </summary>
         Done = 0x00010000,
+
         /// <summary>
-        /// ACMSTREAMHEADER_STATUSF_PREPARED
+        ///     ACMSTREAMHEADER_STATUSF_PREPARED
         /// </summary>
         Prepared = 0x00020000,
+
         /// <summary>
-        /// ACMSTREAMHEADER_STATUSF_INQUEUE
+        ///     ACMSTREAMHEADER_STATUSF_INQUEUE
         /// </summary>
         InQueue = 0x00100000,
     }

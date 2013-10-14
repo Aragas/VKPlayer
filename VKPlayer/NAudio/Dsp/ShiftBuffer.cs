@@ -1,20 +1,19 @@
 using System;
-using System.Collections;
 
 namespace NAudio.Dsp
 {
     /// <summary>
-    /// A shift buffer
+    ///     A shift buffer
     /// </summary>
     [Obsolete("Will be removed from NAudio in the next version")]
     public class ShiftBuffer
     {
-        private double[][] list;
+        private readonly double[][] list;
+        private readonly int size;
         private int insertPos;
-        private int size;
 
         /// <summary>
-        /// creates a new shift buffer
+        ///     creates a new shift buffer
         /// </summary>
         public ShiftBuffer(int size)
         {
@@ -24,23 +23,20 @@ namespace NAudio.Dsp
         }
 
         /// <summary>
-        /// Add samples to the buffer
+        ///     Return samples from the buffer
+        /// </summary>
+        public double[] this[int index]
+        {
+            get { return list[(size + insertPos - index)%size]; }
+        }
+
+        /// <summary>
+        ///     Add samples to the buffer
         /// </summary>
         public void Add(double[] buffer)
         {
             list[insertPos] = buffer;
-            insertPos = (insertPos + 1) % size;			
-        }
-
-        /// <summary>
-        /// Return samples from the buffer
-        /// </summary>
-        public double[] this[int index]
-        {
-            get
-            {
-                return list[(size+insertPos-index) % size];
-            }
+            insertPos = (insertPos + 1)%size;
         }
     }
 }

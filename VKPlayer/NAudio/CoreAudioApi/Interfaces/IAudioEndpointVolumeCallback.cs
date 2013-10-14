@@ -22,9 +22,8 @@
   (Modified for NAudio by Mark Heath)
   
 */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace NAudio.CoreAudioApi.Interfaces
@@ -35,5 +34,4 @@ namespace NAudio.CoreAudioApi.Interfaces
     {
         void OnNotify(IntPtr pNotifyData);
     };
-
 }

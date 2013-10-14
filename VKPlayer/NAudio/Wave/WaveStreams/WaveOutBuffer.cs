@@ -1,26 +1,26 @@
 using System;
-using System.IO;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace NAudio.Wave 
+namespace NAudio.Wave
 {
     /// <summary>
-    /// A buffer of Wave samples for streaming to a Wave Output device
+    ///     A buffer of Wave samples for streaming to a Wave Output device
     /// </summary>
-    class WaveOutBuffer : IDisposable
+    internal class WaveOutBuffer : IDisposable
     {
-        private WaveHeader header;
-        private Int32 bufferSize; // allocated bytes, may not be the same as bytes read
-        private byte[] buffer;
+        private readonly byte[] buffer;
+        private readonly Int32 bufferSize; // allocated bytes, may not be the same as bytes read
+        private readonly WaveHeader header;
+        private readonly object waveOutLock;
+        private readonly IWaveProvider waveStream;
         private GCHandle hBuffer;
-        private IntPtr hWaveOut;
         private GCHandle hHeader; // we need to pin the header structure
         private GCHandle hThis; // for the user callback
-        private IWaveProvider waveStream;
-        private object waveOutLock;
+        private IntPtr hWaveOut;
 
         /// <summary>
-        /// creates a new wavebuffer
+        ///     creates a new wavebuffer
         /// </summary>
         /// <param name="hWaveOut">WaveOut device to write to</param>
         /// <param name="bufferSize">Buffer size in bytes</param>
@@ -29,10 +29,10 @@ namespace NAudio.Wave
         public WaveOutBuffer(IntPtr hWaveOut, Int32 bufferSize, IWaveProvider bufferFillStream, object waveOutLock)
         {
             this.bufferSize = bufferSize;
-            this.buffer = new byte[bufferSize];
-            this.hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            buffer = new byte[bufferSize];
+            hBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             this.hWaveOut = hWaveOut;
-            this.waveStream = bufferFillStream;
+            waveStream = bufferFillStream;
             this.waveOutLock = waveOutLock;
 
             header = new WaveHeader();
@@ -41,26 +41,18 @@ namespace NAudio.Wave
             header.bufferLength = bufferSize;
             header.loops = 1;
             hThis = GCHandle.Alloc(this);
-            header.userData = (IntPtr)hThis;
+            header.userData = (IntPtr) hThis;
             lock (waveOutLock)
             {
-                MmException.Try(WaveInterop.waveOutPrepareHeader(hWaveOut, header, Marshal.SizeOf(header)), "waveOutPrepareHeader");
+                MmException.Try(WaveInterop.waveOutPrepareHeader(hWaveOut, header, Marshal.SizeOf(header)),
+                    "waveOutPrepareHeader");
             }
         }
 
         #region Dispose Pattern
 
         /// <summary>
-        /// Finalizer for this wave buffer
-        /// </summary>
-        ~WaveOutBuffer()
-        {
-            Dispose(false);
-            System.Diagnostics.Debug.Assert(true, "WaveBuffer was not disposed");
-        }
-
-        /// <summary>
-        /// Releases resources held by this WaveBuffer
+        ///     Releases resources held by this WaveBuffer
         /// </summary>
         public void Dispose()
         {
@@ -69,7 +61,16 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Releases resources held by this WaveBuffer
+        ///     Finalizer for this wave buffer
+        /// </summary>
+        ~WaveOutBuffer()
+        {
+            Dispose(false);
+            Debug.Assert(true, "WaveBuffer was not disposed");
+        }
+
+        /// <summary>
+        ///     Releases resources held by this WaveBuffer
         /// </summary>
         protected void Dispose(bool disposing)
         {
@@ -96,6 +97,22 @@ namespace NAudio.Wave
 
         #endregion
 
+        /// <summary>
+        ///     Whether the header's in queue flag is set
+        /// </summary>
+        public bool InQueue
+        {
+            get { return (header.flags & WaveHeaderFlags.InQueue) == WaveHeaderFlags.InQueue; }
+        }
+
+        /// <summary>
+        ///     The buffer size in bytes
+        /// </summary>
+        public Int32 BufferSize
+        {
+            get { return bufferSize; }
+        }
+
         /// this is called by the WAVE callback and should be used to refill the buffer
         internal bool OnDone()
         {
@@ -108,37 +125,12 @@ namespace NAudio.Wave
             {
                 return false;
             }
-            else
+            for (int n = bytes; n < buffer.Length; n++)
             {
-                for (int n = bytes; n < buffer.Length; n++)
-                {
-                    buffer[n] = 0;
-                }
+                buffer[n] = 0;
             }
             WriteToWaveOut();
             return true;
-        }
-
-        /// <summary>
-        /// Whether the header's in queue flag is set
-        /// </summary>
-        public bool InQueue
-        {
-            get
-            {
-                return (header.flags & WaveHeaderFlags.InQueue) == WaveHeaderFlags.InQueue;
-            }
-        }
-
-        /// <summary>
-        /// The buffer size in bytes
-        /// </summary>
-        public Int32 BufferSize
-        {
-            get
-            {
-                return bufferSize;
-            }
         }
 
         private void WriteToWaveOut()
@@ -156,6 +148,5 @@ namespace NAudio.Wave
 
             GC.KeepAlive(this);
         }
-
     }
 }

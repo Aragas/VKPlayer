@@ -21,18 +21,16 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.CoreAudioApi.Interfaces
 {
     internal struct AudioVolumeNotificationDataStruct
     {
-        public Guid guidEventContext;
+        public float ChannelVolume;
         public bool bMuted;
         public float fMasterVolume;
+        public Guid guidEventContext;
         public uint nChannels;
-        public float ChannelVolume;
 
         //Code Should Compile at warning level4 without any warnings, 
         //However this struct will give us Warning CS0649: Field [Fieldname] 
@@ -49,6 +47,5 @@ namespace NAudio.CoreAudioApi.Interfaces
             nChannels = 0;
             ChannelVolume = 0;
         }
-
     }
 }

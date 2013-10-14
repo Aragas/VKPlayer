@@ -1,52 +1,123 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace NAudio.Wave
 {
-
     /// <summary>
-    /// Represents an MP3 Frame
+    ///     Represents an MP3 Frame
     /// </summary>
     public class Mp3Frame
     {
-        private static readonly int[,,] bitRates = new int[,,] {
+        private const int MaxFrameLength = 16*1024;
+
+        private static readonly int[,,] bitRates =
+        {
             {
                 // MPEG Version 1
-                { 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448 }, // Layer 1
-                { 0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384 }, // Layer 2
-                { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 }, // Layer 3
+                {0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448}, // Layer 1
+                {0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384}, // Layer 2
+                {0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320} // Layer 3
             },
             {
                 // MPEG Version 2 & 2.5
-                { 0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256 }, // Layer 1
-                { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }, // Layer 2 
-                { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }, // Layer 3 (same as layer 2)
-            }
-        };
-        private static readonly int[,] samplesPerFrame = new int[,] {
-            {   // MPEG Version 1
-                384,    // Layer1
-                1152,   // Layer2
-                1152    // Layer3
-            },
-            {   // MPEG Version 2 & 2.5
-                384,    // Layer1
-                1152,   // Layer2
-                576     // Layer3
+                {0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256}, // Layer 1
+                {0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160}, // Layer 2 
+                {0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160} // Layer 3 (same as layer 2)
             }
         };
 
-        private static readonly int[] sampleRatesVersion1 = new int[] {44100, 48000, 32000};
-        private static readonly int[] sampleRatesVersion2 = new int[] {22050, 24000, 16000};
-        private static readonly int[] sampleRatesVersion25 = new int[] {11025, 12000, 8000};
+        private static readonly int[,] samplesPerFrame =
+        {
+            {
+                // MPEG Version 1
+                384, // Layer1
+                1152, // Layer2
+                1152 // Layer3
+            },
+            {
+                // MPEG Version 2 & 2.5
+                384, // Layer1
+                1152, // Layer2
+                576 // Layer3
+            }
+        };
+
+        private static readonly int[] sampleRatesVersion1 = {44100, 48000, 32000};
+        private static readonly int[] sampleRatesVersion2 = {22050, 24000, 16000};
+        private static readonly int[] sampleRatesVersion25 = {11025, 12000, 8000};
 
         //private short crc;
-        private const int MaxFrameLength = 16*1024;
+
 
         /// <summary>
-        /// Reads an MP3 frame from a stream
+        ///     Constructs an MP3 frame
+        /// </summary>
+        private Mp3Frame()
+        {
+        }
+
+        /// <summary>
+        ///     Sample rate of this frame
+        /// </summary>
+        public int SampleRate { get; private set; }
+
+        /// <summary>
+        ///     Frame length in bytes
+        /// </summary>
+        public int FrameLength { get; private set; }
+
+        /// <summary>
+        ///     Bit Rate
+        /// </summary>
+        public int BitRate { get; private set; }
+
+        /// <summary>
+        ///     Raw frame data (includes header bytes)
+        /// </summary>
+        public byte[] RawData { get; private set; }
+
+        /// <summary>
+        ///     MPEG Version
+        /// </summary>
+        public MpegVersion MpegVersion { get; private set; }
+
+        /// <summary>
+        ///     MPEG Layer
+        /// </summary>
+        public MpegLayer MpegLayer { get; private set; }
+
+        /// <summary>
+        ///     Channel Mode
+        /// </summary>
+        public ChannelMode ChannelMode { get; private set; }
+
+        /// <summary>
+        ///     The number of samples in this frame
+        /// </summary>
+        public int SampleCount { get; private set; }
+
+        /// <summary>
+        ///     The channel extension bits
+        /// </summary>
+        public int ChannelExtension { get; private set; }
+
+        /// <summary>
+        ///     The bitrate index (directly from the header)
+        /// </summary>
+        public int BitRateIndex { get; private set; }
+
+        /// <summary>
+        ///     Whether the Copyright bit is set
+        /// </summary>
+        public bool Copyright { get; private set; }
+
+        /// <summary>
+        ///     Whether a CRC is present
+        /// </summary>
+        public bool CrcPresent { get; private set; }
+
+        /// <summary>
+        ///     Reads an MP3 frame from a stream
         /// </summary>
         /// <param name="input">input stream</param>
         /// <returns>A valid MP3 frame, or null if none found</returns>
@@ -56,20 +127,21 @@ namespace NAudio.Wave
         }
 
         /// <summary>Reads an MP3Frame from a stream</summary>
-        /// <remarks>http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm has some good info
-        /// also see http://www.codeproject.com/KB/audio-video/mpegaudioinfo.aspx
+        /// <remarks>
+        ///     http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm has some good info
+        ///     also see http://www.codeproject.com/KB/audio-video/mpegaudioinfo.aspx
         /// </remarks>
         /// <returns>A valid MP3 frame, or null if none found</returns>
         public static Mp3Frame LoadFromStream(Stream input, bool readData)
         {
-            byte[] headerBytes = new byte[4];
+            var headerBytes = new byte[4];
             int bytesRead = input.Read(headerBytes, 0, headerBytes.Length);
             if (bytesRead < headerBytes.Length)
             {
                 // reached end of stream, no more MP3 frames
                 return null;
             }
-            Mp3Frame frame = new Mp3Frame();
+            var frame = new Mp3Frame();
 
             while (!IsValidHeader(headerBytes, frame))
             {
@@ -109,18 +181,9 @@ namespace NAudio.Wave
             return frame;
         }
 
-
         /// <summary>
-        /// Constructs an MP3 frame
-        /// </summary>
-        private Mp3Frame()
-        {
-
-        }
-
-        /// <summary>
-        /// checks if the four bytes represent a valid header,
-        /// if they are, will parse the values into Mp3Frame
+        ///     checks if the four bytes represent a valid header,
+        ///     if they are, will parse the values into Mp3Frame
         /// </summary>
         private static bool IsValidHeader(byte[] headerBytes, Mp3Frame frame)
         {
@@ -148,7 +211,7 @@ namespace NAudio.Wave
                     // invalid index
                     return false;
                 }
-                int versionIndex = frame.MpegVersion == Wave.MpegVersion.Version1 ? 0 : 1;
+                int versionIndex = frame.MpegVersion == MpegVersion.Version1 ? 0 : 1;
                 frame.BitRate = bitRates[versionIndex, layerIndex, frame.BitRateIndex]*1000;
                 if (frame.BitRate == 0)
                 {
@@ -203,66 +266,5 @@ namespace NAudio.Wave
             }
             return false;
         }
-
-        /// <summary>
-        /// Sample rate of this frame
-        /// </summary>
-        public int SampleRate { get; private set; }
-
-        /// <summary>
-        /// Frame length in bytes
-        /// </summary>
-        public int FrameLength { get; private set; }
-
-        /// <summary>
-        /// Bit Rate
-        /// </summary>
-        public int BitRate { get; private set; }
-
-        /// <summary>
-        /// Raw frame data (includes header bytes)
-        /// </summary>
-        public byte[] RawData { get; private set; }
-
-        /// <summary>
-        /// MPEG Version
-        /// </summary>
-        public MpegVersion MpegVersion { get; private set; }
-
-        /// <summary>
-        /// MPEG Layer
-        /// </summary>
-        public MpegLayer MpegLayer { get; private set; }
-
-        /// <summary>
-        /// Channel Mode
-        /// </summary>
-        public ChannelMode ChannelMode { get; private set; }
-
-        /// <summary>
-        /// The number of samples in this frame
-        /// </summary>
-        public int SampleCount { get; private set; }
-
-        /// <summary>
-        /// The channel extension bits
-        /// </summary>
-        public int ChannelExtension { get; private set; }
-
-        /// <summary>
-        /// The bitrate index (directly from the header)
-        /// </summary>
-        public int BitRateIndex { get; private set; }
-
-        /// <summary>
-        /// Whether the Copyright bit is set
-        /// </summary>
-        public bool Copyright { get; private set; }
-
-        /// <summary>
-        /// Whether a CRC is present
-        /// </summary>
-        public bool CrcPresent { get; private set; }
-
     }
 }

@@ -1,23 +1,22 @@
 ﻿namespace NAudio.Wave.SampleProviders
 {
     /// <summary>
-    /// Converts an IWaveProvider containing 32 bit PCM to an
-    /// ISampleProvider
+    ///     Converts an IWaveProvider containing 32 bit PCM to an
+    ///     ISampleProvider
     /// </summary>
     public class Pcm32BitToSampleProvider : SampleProviderConverterBase
     {
         /// <summary>
-        /// Initialises a new instance of Pcm32BitToSampleProvider
+        ///     Initialises a new instance of Pcm32BitToSampleProvider
         /// </summary>
         /// <param name="source">Source Wave Provider</param>
         public Pcm32BitToSampleProvider(IWaveProvider source)
             : base(source)
         {
-
         }
 
         /// <summary>
-        /// Reads floating point samples from this sample provider
+        ///     Reads floating point samples from this sample provider
         /// </summary>
         /// <param name="buffer">sample buffer</param>
         /// <param name="offset">offset within sample buffer to write to</param>

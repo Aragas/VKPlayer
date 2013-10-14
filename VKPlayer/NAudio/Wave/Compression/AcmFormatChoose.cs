@@ -1,89 +1,97 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace NAudio.Wave.Compression
 {
     /// <summary>
-    /// ACMFORMATCHOOSE
-    /// http://msdn.microsoft.com/en-us/library/dd742911%28VS.85%29.aspx
+    ///     ACMFORMATCHOOSE
+    ///     http://msdn.microsoft.com/en-us/library/dd742911%28VS.85%29.aspx
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Auto)]
-    struct AcmFormatChoose
+    internal struct AcmFormatChoose
     {
         /// <summary>
-        /// DWORD cbStruct; 
+        ///     DWORD cbStruct;
         /// </summary>
         public int structureSize;
+
         /// <summary>
-        /// DWORD fdwStyle; 
+        ///     DWORD fdwStyle;
         /// </summary>
         public AcmFormatChooseStyleFlags styleFlags;
+
         /// <summary>
-        /// HWND hwndOwner; 
+        ///     HWND hwndOwner;
         /// </summary>
         public IntPtr ownerWindowHandle;
+
         /// <summary>
-        /// LPWAVEFORMATEX pwfx; 
+        ///     LPWAVEFORMATEX pwfx;
         /// </summary>
         public IntPtr selectedWaveFormatPointer;
+
         /// <summary>
-        /// DWORD cbwfx; 
+        ///     DWORD cbwfx;
         /// </summary>
         public int selectedWaveFormatByteSize;
+
         /// <summary>
-        /// LPCTSTR pszTitle; 
+        ///     LPCTSTR pszTitle;
         /// </summary>
-        [MarshalAs(UnmanagedType.LPTStr)]
-        public string title; 
+        [MarshalAs(UnmanagedType.LPTStr)] public string title;
+
         /// <summary>
-        /// TCHAR szFormatTag[ACMFORMATTAGDETAILS_FORMATTAG_CHARS]; 
+        ///     TCHAR szFormatTag[ACMFORMATTAGDETAILS_FORMATTAG_CHARS];
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst=AcmFormatTagDetails.FormatTagDescriptionChars)]
-        public string formatTagDescription;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = AcmFormatTagDetails.FormatTagDescriptionChars)] public string
+            formatTagDescription;
+
         /// <summary>
-        /// TCHAR szFormat[ACMFORMATDETAILS_FORMAT_CHARS]; 
+        ///     TCHAR szFormat[ACMFORMATDETAILS_FORMAT_CHARS];
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = AcmFormatDetails.FormatDescriptionChars)]
-        public string formatDescription;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = AcmFormatDetails.FormatDescriptionChars)] public string
+            formatDescription;
+
         /// <summary>
-        /// LPTSTR pszName; 
-        /// n.b. can be written into
+        ///     LPTSTR pszName;
+        ///     n.b. can be written into
         /// </summary>
-        [MarshalAs(UnmanagedType.LPTStr)]
-        public string name; 
+        [MarshalAs(UnmanagedType.LPTStr)] public string name;
+
         /// <summary>
-        /// DWORD cchName
-        /// Should be at least 128 unless name is zero
+        ///     DWORD cchName
+        ///     Should be at least 128 unless name is zero
         /// </summary>
         public int nameByteSize;
+
         /// <summary>
-        /// DWORD fdwEnum; 
+        ///     DWORD fdwEnum;
         /// </summary>
         public AcmFormatEnumFlags formatEnumFlags;
+
         /// <summary>
-        /// LPWAVEFORMATEX pwfxEnum; 
+        ///     LPWAVEFORMATEX pwfxEnum;
         /// </summary>
         public IntPtr waveFormatEnumPointer;
+
         /// <summary>
-        /// HINSTANCE hInstance; 
+        ///     HINSTANCE hInstance;
         /// </summary>
         public IntPtr instanceHandle;
+
         /// <summary>
-        /// LPCTSTR pszTemplateName; 
+        ///     LPCTSTR pszTemplateName;
         /// </summary>
-        [MarshalAs(UnmanagedType.LPTStr)]
-        public string templateName;
+        [MarshalAs(UnmanagedType.LPTStr)] public string templateName;
+
         /// <summary>
-        /// LPARAM lCustData; 
+        ///     LPARAM lCustData;
         /// </summary>
         public IntPtr customData;
+
         /// <summary>
-        /// ACMFORMATCHOOSEHOOKPROC pfnHook; 
+        ///     ACMFORMATCHOOSEHOOKPROC pfnHook;
         /// </summary>
         public AcmInterop.AcmFormatChooseHookProc windowCallbackFunction;
-    
-
     }
 }

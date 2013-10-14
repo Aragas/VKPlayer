@@ -1,32 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// Microsoft ADPCM
-    /// See http://icculus.org/SDL_sound/downloads/external_documentation/wavecomp.htm
+    ///     Microsoft ADPCM
+    ///     See http://icculus.org/SDL_sound/downloads/external_documentation/wavecomp.htm
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack=2)]
+    [StructLayout(LayoutKind.Sequential, Pack = 2)]
     public class AdpcmWaveFormat : WaveFormat
     {
-        short samplesPerBlock;
-        short numCoeff;
+        private readonly short samplesPerBlock;
+        private readonly short numCoeff;
         // 7 pairs of coefficients
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)]
-        short[] coefficients;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 14)] private readonly short[] coefficients;
 
         /// <summary>
-        /// Empty constructor needed for marshalling from a pointer
+        ///     Empty constructor needed for marshalling from a pointer
         /// </summary>
-        AdpcmWaveFormat() : this(8000,1)
+        private AdpcmWaveFormat() : this(8000, 1)
         {
         }
 
         /// <summary>
-        /// Samples per block
+        ///     Samples per block
         /// </summary>
         public int SamplesPerBlock
         {
@@ -34,7 +32,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Number of coefficients
+        ///     Number of coefficients
         /// </summary>
         public int NumCoefficients
         {
@@ -42,7 +40,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Coefficients
+        ///     Coefficients
         /// </summary>
         public short[] Coefficients
         {
@@ -50,22 +48,22 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Microsoft ADPCM  
+        ///     Microsoft ADPCM
         /// </summary>
         /// <param name="sampleRate">Sample Rate</param>
         /// <param name="channels">Channels</param>
         public AdpcmWaveFormat(int sampleRate, int channels) :
-            base(sampleRate,0,channels)
+            base(sampleRate, 0, channels)
         {
-            this.waveFormatTag = WaveFormatEncoding.Adpcm;
-            
+            waveFormatTag = WaveFormatEncoding.Adpcm;
+
             // TODO: validate sampleRate, bitsPerSample
-            this.extraSize = 32;
-            switch(this.sampleRate)
+            extraSize = 32;
+            switch (this.sampleRate)
             {
-                case 8000: 
+                case 8000:
                 case 11025:
-                    blockAlign = 256; 
+                    blockAlign = 256;
                     break;
                 case 22050:
                     blockAlign = 512;
@@ -76,25 +74,26 @@ namespace NAudio.Wave
                     break;
             }
 
-            this.bitsPerSample = 4;
-            this.samplesPerBlock = (short) ((((blockAlign - (7 * channels)) * 8) / (bitsPerSample * channels)) + 2);
-            this.averageBytesPerSecond =
-                ((this.SampleRate * blockAlign) / samplesPerBlock);
+            bitsPerSample = 4;
+            samplesPerBlock = (short) ((((blockAlign - (7*channels))*8)/(bitsPerSample*channels)) + 2);
+            averageBytesPerSecond =
+                ((SampleRate*blockAlign)/samplesPerBlock);
 
             // samplesPerBlock = blockAlign - (7 * channels)) * (2 / channels) + 2;
 
 
             numCoeff = 7;
-            coefficients = new short[14] {
-                256,0,512,-256,0,0,192,64,240,0,460,-208,392,-232
+            coefficients = new short[14]
+            {
+                256, 0, 512, -256, 0, 0, 192, 64, 240, 0, 460, -208, 392, -232
             };
         }
 
         /// <summary>
-        /// Serializes this wave format
+        ///     Serializes this wave format
         /// </summary>
         /// <param name="writer">Binary writer</param>
-        public override void Serialize(System.IO.BinaryWriter writer)
+        public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);
             writer.Write(samplesPerBlock);
@@ -106,12 +105,12 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// String Description of this WaveFormat
+        ///     String Description of this WaveFormat
         /// </summary>
         public override string ToString()
         {
             return String.Format("Microsoft ADPCM {0} Hz {1} channels {2} bits per sample {3} samples per block",
-                this.SampleRate, this.channels, this.bitsPerSample, this.samplesPerBlock);
+                SampleRate, channels, bitsPerSample, samplesPerBlock);
         }
     }
 }

@@ -4,15 +4,15 @@ using System.IO;
 namespace NAudio.Midi
 {
     /// <summary>
-    /// Represents a MIDI key signature event event
+    ///     Represents a MIDI key signature event event
     /// </summary>
     public class KeySignatureEvent : MetaEvent
     {
-        private byte sharpsFlats;
-        private byte majorMinor;
+        private readonly byte majorMinor;
+        private readonly byte sharpsFlats;
 
         /// <summary>
-        /// Reads a new track sequence number event from a MIDI stream
+        ///     Reads a new track sequence number event from a MIDI stream
         /// </summary>
         /// <param name="br">The MIDI stream</param>
         /// <param name="length">the data length</param>
@@ -27,7 +27,7 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Creates a new Key signature event with the specified data
+        ///     Creates a new Key signature event with the specified data
         /// </summary>
         public KeySignatureEvent(int sharpsFlats, int majorMinor, long absoluteTime)
             : base(MetaEventType.KeySignature, 2, absoluteTime)
@@ -37,29 +37,23 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Number of sharps or flats
+        ///     Number of sharps or flats
         /// </summary>
         public int SharpsFlats
         {
-            get
-            {
-                return sharpsFlats;
-            }
+            get { return sharpsFlats; }
         }
 
         /// <summary>
-        /// Major or Minor key
+        ///     Major or Minor key
         /// </summary>
         public int MajorMinor
         {
-            get
-            {
-                return majorMinor;
-            }
+            get { return majorMinor; }
         }
 
         /// <summary>
-        /// Describes this event
+        ///     Describes this event
         /// </summary>
         /// <returns>String describing the event</returns>
         public override string ToString()
@@ -68,9 +62,9 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Calls base class export first, then exports the data 
-        /// specific to this event
-        /// <seealso cref="MidiEvent.Export">MidiEvent.Export</seealso>
+        ///     Calls base class export first, then exports the data
+        ///     specific to this event
+        ///     <seealso cref="MidiEvent.Export">MidiEvent.Export</seealso>
         /// </summary>
         public override void Export(ref long absoluteTime, BinaryWriter writer)
         {
@@ -80,6 +74,3 @@ namespace NAudio.Midi
         }
     }
 }
-
-
-

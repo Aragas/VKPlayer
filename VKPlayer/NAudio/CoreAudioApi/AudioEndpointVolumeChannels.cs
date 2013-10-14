@@ -20,45 +20,18 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
 using System.Runtime.InteropServices;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Endpoint Volume Channels
+    ///     Audio Endpoint Volume Channels
     /// </summary>
     public class AudioEndpointVolumeChannels
     {
-        IAudioEndpointVolume _AudioEndPointVolume;
-        AudioEndpointVolumeChannel[] _Channels;
-
-        /// <summary>
-        /// Channel Count
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                int result;
-                Marshal.ThrowExceptionForHR(_AudioEndPointVolume.GetChannelCount(out result));
-                return result;
-            }
-        }
-
-        /// <summary>
-        /// Indexer - get a specific channel
-        /// </summary>
-        public AudioEndpointVolumeChannel this[int index]
-        {
-            get
-            {
-                return _Channels[index];
-            }
-        }
+        private readonly IAudioEndpointVolume _AudioEndPointVolume;
+        private readonly AudioEndpointVolumeChannel[] _Channels;
 
         internal AudioEndpointVolumeChannels(IAudioEndpointVolume parent)
         {
@@ -73,6 +46,25 @@ namespace NAudio.CoreAudioApi
             }
         }
 
+        /// <summary>
+        ///     Channel Count
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                int result;
+                Marshal.ThrowExceptionForHR(_AudioEndPointVolume.GetChannelCount(out result));
+                return result;
+            }
+        }
 
+        /// <summary>
+        ///     Indexer - get a specific channel
+        /// </summary>
+        public AudioEndpointVolumeChannel this[int index]
+        {
+            get { return _Channels[index]; }
+        }
     }
 }

@@ -19,22 +19,20 @@
      misrepresented as being the original source code.
   3. This notice may not be removed or altered from any source distribution.
 */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Meter Information
+    ///     Audio Meter Information
     /// </summary>
     public class AudioMeterInformation
     {
-        private IAudioMeterInformation _AudioMeterInformation;
-        private EEndpointHardwareSupport _HardwareSupport;
-        private AudioMeterInformationChannels _Channels;
+        private readonly IAudioMeterInformation _AudioMeterInformation;
+        private readonly AudioMeterInformationChannels _Channels;
+        private readonly EEndpointHardwareSupport _HardwareSupport;
 
         internal AudioMeterInformation(IAudioMeterInformation realInterface)
         {
@@ -42,35 +40,28 @@ namespace NAudio.CoreAudioApi
 
             _AudioMeterInformation = realInterface;
             Marshal.ThrowExceptionForHR(_AudioMeterInformation.QueryHardwareSupport(out HardwareSupp));
-            _HardwareSupport = (EEndpointHardwareSupport)HardwareSupp;
+            _HardwareSupport = (EEndpointHardwareSupport) HardwareSupp;
             _Channels = new AudioMeterInformationChannels(_AudioMeterInformation);
-
         }
 
         /// <summary>
-        /// Peak Values
+        ///     Peak Values
         /// </summary>
         public AudioMeterInformationChannels PeakValues
         {
-            get
-            {
-                return _Channels;
-            }
+            get { return _Channels; }
         }
 
         /// <summary>
-        /// Hardware Support
+        ///     Hardware Support
         /// </summary>
         public EEndpointHardwareSupport HardwareSupport
         {
-            get
-            {
-                return _HardwareSupport;
-            }
+            get { return _HardwareSupport; }
         }
 
         /// <summary>
-        /// Master Peak Value
+        ///     Master Peak Value
         /// </summary>
         public float MasterPeakValue
         {

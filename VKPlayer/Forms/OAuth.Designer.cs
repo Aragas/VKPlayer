@@ -1,4 +1,4 @@
-﻿namespace VKPlayer
+﻿namespace Rainmeter.Forms
 {
     partial class OAuth
     {

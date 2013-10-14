@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NAudio.Wave.Compression
+﻿namespace NAudio.Wave.Compression
 {
     /// <summary>
-    /// ACM Format Tag
+    ///     ACM Format Tag
     /// </summary>
     public class AcmFormatTag
     {
@@ -13,11 +9,11 @@ namespace NAudio.Wave.Compression
 
         internal AcmFormatTag(AcmFormatTagDetails formatTagDetails)
         {
-            this.formatTagDetails = formatTagDetails;                        
+            this.formatTagDetails = formatTagDetails;
         }
 
         /// <summary>
-        /// Format Tag Index
+        ///     Format Tag Index
         /// </summary>
         public int FormatTagIndex
         {
@@ -25,15 +21,15 @@ namespace NAudio.Wave.Compression
         }
 
         /// <summary>
-        /// Format Tag
+        ///     Format Tag
         /// </summary>
         public WaveFormatEncoding FormatTag
         {
-            get { return (WaveFormatEncoding)formatTagDetails.formatTag; }
+            get { return (WaveFormatEncoding) formatTagDetails.formatTag; }
         }
 
         /// <summary>
-        /// Format Size
+        ///     Format Size
         /// </summary>
         public int FormatSize
         {
@@ -41,7 +37,7 @@ namespace NAudio.Wave.Compression
         }
 
         /// <summary>
-        /// Support Flags
+        ///     Support Flags
         /// </summary>
         public AcmDriverDetailsSupportFlags SupportFlags
         {
@@ -49,7 +45,7 @@ namespace NAudio.Wave.Compression
         }
 
         /// <summary>
-        /// Standard Formats Count
+        ///     Standard Formats Count
         /// </summary>
         public int StandardFormatsCount
         {
@@ -57,13 +53,11 @@ namespace NAudio.Wave.Compression
         }
 
         /// <summary>
-        /// Format Description
+        ///     Format Description
         /// </summary>
         public string FormatDescription
         {
             get { return formatTagDetails.formatDescription; }
         }
-
-
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NAudio.Wave.SampleProviders
 {
     /// <summary>
-    /// Utility class for converting to SampleProvider
+    ///     Utility class for converting to SampleProvider
     /// </summary>
-    static class SampleProviderConverters
+    internal static class SampleProviderConverters
     {
         /// <summary>
-        /// Helper function to go from IWaveProvider to a SampleProvider
-        /// Must already be PCM or IEEE float
+        ///     Helper function to go from IWaveProvider to a SampleProvider
+        ///     Must already be PCM or IEEE float
         /// </summary>
         /// <param name="waveProvider">The WaveProvider to convert</param>
         /// <returns>A sample provider</returns>

@@ -20,15 +20,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Endpoint Volume Notifiaction Delegate
+    ///     Audio Endpoint Volume Notifiaction Delegate
     /// </summary>
     /// <param name="data">Audio Volume Notification Data</param>
-    public delegate void AudioEndpointVolumeNotificationDelegate( AudioVolumeNotificationData data);
+    public delegate void AudioEndpointVolumeNotificationDelegate(AudioVolumeNotificationData data);
 }

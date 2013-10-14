@@ -19,47 +19,39 @@
      misrepresented as being the original source code.
   3. This notice may not be removed or altered from any source distribution.
 */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
+
 using System.Runtime.InteropServices;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Endpoint Volume Step Information
+    ///     Audio Endpoint Volume Step Information
     /// </summary>
     public class AudioEndpointVolumeStepInformation
     {
-        private uint _Step;
-        private uint _StepCount;
+        private readonly uint _Step;
+        private readonly uint _StepCount;
+
         internal AudioEndpointVolumeStepInformation(IAudioEndpointVolume parent)
         {
             Marshal.ThrowExceptionForHR(parent.GetVolumeStepInfo(out _Step, out _StepCount));
         }
 
         /// <summary>
-        /// Step
+        ///     Step
         /// </summary>
         public uint Step
         {
-            get
-            {
-                return _Step;
-            }
+            get { return _Step; }
         }
 
         /// <summary>
-        /// StepCount
+        ///     StepCount
         /// </summary>
         public uint StepCount
         {
-            get
-            {
-                return _StepCount;
-            }
+            get { return _StepCount; }
         }
-
     }
 }

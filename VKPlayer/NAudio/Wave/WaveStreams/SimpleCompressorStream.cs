@@ -1,66 +1,56 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NAudio.Dsp;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// A simple compressor
+    ///     A simple compressor
     /// </summary>
     public class SimpleCompressorStream : WaveStream
     {
-        private WaveStream sourceStream;
-        private SimpleCompressor simpleCompressor;
+        private readonly int bytesPerSample;
+        private readonly int channels;
+        private readonly SimpleCompressor simpleCompressor;
         private byte[] sourceBuffer; // buffer used by Read function
-        private bool enabled;
-        private int channels;
-        private int bytesPerSample;
+        private WaveStream sourceStream;
 
         /// <summary>
-        /// Create a new simple compressor stream
+        ///     Create a new simple compressor stream
         /// </summary>
         /// <param name="sourceStream">Source stream</param>
         public SimpleCompressorStream(WaveStream sourceStream)
         {
             this.sourceStream = sourceStream;
-            this.channels = sourceStream.WaveFormat.Channels;
-            this.bytesPerSample = sourceStream.WaveFormat.BitsPerSample / 8;
+            channels = sourceStream.WaveFormat.Channels;
+            bytesPerSample = sourceStream.WaveFormat.BitsPerSample/8;
             simpleCompressor = new SimpleCompressor(5.0, 10.0, sourceStream.WaveFormat.SampleRate);
             simpleCompressor.Threshold = 16;
             simpleCompressor.Ratio = 6;
             simpleCompressor.MakeUpGain = 16;
-
         }
 
         /// <summary>
-        /// Make-up Gain
+        ///     Make-up Gain
         /// </summary>
         public double MakeUpGain
         {
-            get 
-            { 
-                return simpleCompressor.MakeUpGain; 
-            }
-            set 
+            get { return simpleCompressor.MakeUpGain; }
+            set
             {
                 lock (this)
                 {
                     simpleCompressor.MakeUpGain = value;
-                } 
+                }
             }
         }
 
         /// <summary>
-        /// Threshold
+        ///     Threshold
         /// </summary>
         public double Threshold
         {
-            get 
-            { 
-                return simpleCompressor.Threshold; 
-            }
-            set 
+            get { return simpleCompressor.Threshold; }
+            set
             {
                 lock (this)
                 {
@@ -70,15 +60,12 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Ratio
+        ///     Ratio
         /// </summary>
         public double Ratio
         {
-            get 
-            { 
-                return simpleCompressor.Ratio; 
-            }
-            set 
+            get { return simpleCompressor.Ratio; }
+            set
             {
                 lock (this)
                 {
@@ -88,14 +75,11 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Attack time
+        ///     Attack time
         /// </summary>
         public double Attack
         {
-            get
-            {
-                return simpleCompressor.Attack;
-            }
+            get { return simpleCompressor.Attack; }
             set
             {
                 lock (this)
@@ -106,14 +90,11 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Release time
+        ///     Release time
         /// </summary>
         public double Release
         {
-            get
-            {
-                return simpleCompressor.Release;
-            }
+            get { return simpleCompressor.Release; }
             set
             {
                 lock (this)
@@ -125,52 +106,25 @@ namespace NAudio.Wave
 
 
         /// <summary>
-        /// Determine whether the stream has the required amount of data.
+        ///     Turns gain on or off
         /// </summary>
-        /// <param name="count">Number of bytes of data required from the stream.</param>
-        /// <returns>Flag indicating whether the required amount of data is avialable.</returns>
-        public override bool HasData(int count)
-        {
-            return sourceStream.HasData(count);
-        }
+        public bool Enabled { get; set; }
 
 
         /// <summary>
-        /// Turns gain on or off
-        /// </summary>
-        public bool Enabled
-        {
-            get
-            {
-                return enabled;
-            }
-            set
-            {
-                enabled = value;
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the stream length
+        ///     Returns the stream length
         /// </summary>
         public override long Length
         {
-            get
-            {
-                return sourceStream.Length;
-            }
+            get { return sourceStream.Length; }
         }
 
         /// <summary>
-        /// Gets or sets the current position in the stream
+        ///     Gets or sets the current position in the stream
         /// </summary>
         public override long Position
         {
-            get
-            {
-                return sourceStream.Position;
-            }
+            get { return sourceStream.Position; }
             set
             {
                 lock (this)
@@ -181,14 +135,33 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// Gets the WaveFormat of this stream
+        ///     Gets the WaveFormat of this stream
         /// </summary>
         public override WaveFormat WaveFormat
         {
+            get { return sourceStream.WaveFormat; }
+        }
+
+        /// <summary>
+        ///     Gets the block alignment for this stream
+        /// </summary>
+        public override int BlockAlign
+        {
             get
             {
-                return sourceStream.WaveFormat;
+                // TODO: investigate forcing 20ms
+                return sourceStream.BlockAlign;
             }
+        }
+
+        /// <summary>
+        ///     Determine whether the stream has the required amount of data.
+        /// </summary>
+        /// <param name="count">Number of bytes of data required from the stream.</param>
+        /// <returns>Flag indicating whether the required amount of data is avialable.</returns>
+        public override bool HasData(int count)
+        {
+            return sourceStream.HasData(count);
         }
 
         private void ReadSamples(byte[] buffer, int start, out double left, out double right)
@@ -207,10 +180,10 @@ namespace NAudio.Wave
             }
             else if (bytesPerSample == 2)
             {
-                left = BitConverter.ToInt16(buffer, start) / 32768.0;
+                left = BitConverter.ToInt16(buffer, start)/32768.0;
                 if (channels > 1)
                 {
-                    right = BitConverter.ToInt16(buffer, start + bytesPerSample) / 32768.0;
+                    right = BitConverter.ToInt16(buffer, start + bytesPerSample)/32768.0;
                 }
                 else
                 {
@@ -227,24 +200,25 @@ namespace NAudio.Wave
         {
             if (bytesPerSample == 4)
             {
-                Array.Copy(BitConverter.GetBytes((float)left), 0, buffer, start, bytesPerSample);
+                Array.Copy(BitConverter.GetBytes((float) left), 0, buffer, start, bytesPerSample);
                 if (channels > 1)
                 {
-                    Array.Copy(BitConverter.GetBytes((float)right), 0, buffer, start + bytesPerSample, bytesPerSample);
+                    Array.Copy(BitConverter.GetBytes((float) right), 0, buffer, start + bytesPerSample, bytesPerSample);
                 }
             }
             else if (bytesPerSample == 2)
             {
-                Array.Copy(BitConverter.GetBytes((short)(left * 32768.0)), 0, buffer, start, bytesPerSample);
+                Array.Copy(BitConverter.GetBytes((short) (left*32768.0)), 0, buffer, start, bytesPerSample);
                 if (channels > 1)
                 {
-                    Array.Copy(BitConverter.GetBytes((short)(right * 32768.0)), 0, buffer, start + bytesPerSample, bytesPerSample);
+                    Array.Copy(BitConverter.GetBytes((short) (right*32768.0)), 0, buffer, start + bytesPerSample,
+                        bytesPerSample);
                 }
             }
         }
 
         /// <summary>
-        /// Reads bytes from this stream
+        ///     Reads bytes from this stream
         /// </summary>
         /// <param name="array">Buffer to read into</param>
         /// <param name="offset">Offset in array to read into</param>
@@ -259,10 +233,10 @@ namespace NAudio.Wave
                     if (sourceBuffer == null || sourceBuffer.Length < count)
                         sourceBuffer = new byte[count];
                     int sourceBytesRead = sourceStream.Read(sourceBuffer, 0, count);
-                    int sampleCount = sourceBytesRead / (bytesPerSample * channels);
+                    int sampleCount = sourceBytesRead/(bytesPerSample*channels);
                     for (int sample = 0; sample < sampleCount; sample++)
                     {
-                        int start = sample * bytesPerSample * channels;
+                        int start = sample*bytesPerSample*channels;
                         double in1;
                         double in2;
                         ReadSamples(sourceBuffer, start, out in1, out in2);
@@ -271,16 +245,12 @@ namespace NAudio.Wave
                     }
                     return count;
                 }
-                else
-                {
-                    return sourceStream.Read(array, offset, count);
-                }
+                return sourceStream.Read(array, offset, count);
             }
-
         }
 
         /// <summary>
-        /// Disposes this stream
+        ///     Disposes this stream
         /// </summary>
         /// <param name="disposing">true if the user called this</param>
         protected override void Dispose(bool disposing)
@@ -299,18 +269,5 @@ namespace NAudio.Wave
             // Call Dispose on your base class.
             base.Dispose(disposing);
         }
-
-        /// <summary>
-        /// Gets the block alignment for this stream
-        /// </summary>
-        public override int BlockAlign
-        {
-            get
-            {
-                // TODO: investigate forcing 20ms
-                return sourceStream.BlockAlign;
-            }
-        }
     }
 }
-

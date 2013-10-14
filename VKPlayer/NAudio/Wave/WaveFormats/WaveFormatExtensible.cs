@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 using NAudio.Dmo;
 
 namespace NAudio.Wave
 {
     /// <summary>
-    /// WaveFormatExtensible
-    /// http://www.microsoft.com/whdc/device/audio/multichaud.mspx
+    ///     WaveFormatExtensible
+    ///     http://www.microsoft.com/whdc/device/audio/multichaud.mspx
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 2)]	
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 2)]
     public class WaveFormatExtensible : WaveFormat
-    {        
-        short wValidBitsPerSample; // bits of precision, or is wSamplesPerBlock if wBitsPerSample==0
-        int dwChannelMask; // which channels are present in stream
-        Guid subFormat;
+    {
+        private readonly short wValidBitsPerSample; // bits of precision, or is wSamplesPerBlock if wBitsPerSample==0
+        private readonly int dwChannelMask; // which channels are present in stream
+        private Guid subFormat;
 
         /// <summary>
-        /// Parameterless constructor for marshalling
+        ///     Parameterless constructor for marshalling
         /// </summary>
-        WaveFormatExtensible()
+        private WaveFormatExtensible()
         {
         }
 
         /// <summary>
-        /// Creates a new WaveFormatExtensible for PCM or IEEE
+        ///     Creates a new WaveFormatExtensible for PCM or IEEE
         /// </summary>
         public WaveFormatExtensible(int rate, int bits, int channels)
             : base(rate, bits, channels)
@@ -40,26 +39,29 @@ namespace NAudio.Wave
             if (bits == 32)
             {
                 // KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
-                subFormat = AudioMediaSubtypes.MEDIASUBTYPE_IEEE_FLOAT; // new Guid("00000003-0000-0010-8000-00aa00389b71");
+                subFormat = AudioMediaSubtypes.MEDIASUBTYPE_IEEE_FLOAT;
+                // new Guid("00000003-0000-0010-8000-00aa00389b71");
             }
             else
             {
                 // KSDATAFORMAT_SUBTYPE_PCM
                 subFormat = AudioMediaSubtypes.MEDIASUBTYPE_PCM; // new Guid("00000001-0000-0010-8000-00aa00389b71");
             }
-
         }
 
         /// <summary>
-        /// SubFormat (may be one of AudioMediaSubtypes)
+        ///     SubFormat (may be one of AudioMediaSubtypes)
         /// </summary>
-        public Guid SubFormat { get { return subFormat; } }
+        public Guid SubFormat
+        {
+            get { return subFormat; }
+        }
 
         /// <summary>
-        /// Serialize
+        ///     Serialize
         /// </summary>
         /// <param name="writer"></param>
-        public override void Serialize(System.IO.BinaryWriter writer)
+        public override void Serialize(BinaryWriter writer)
         {
             base.Serialize(writer);
             writer.Write(wValidBitsPerSample);
@@ -69,7 +71,7 @@ namespace NAudio.Wave
         }
 
         /// <summary>
-        /// String representation
+        ///     String representation
         /// </summary>
         public override string ToString()
         {

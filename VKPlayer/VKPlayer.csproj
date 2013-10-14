@@ -65,9 +65,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <NoWarn>1607</NoWarn>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>0</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -93,18 +93,57 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Methods\Audio.cs" />
-    <Compile Include="NAudio\Codecs\ALawDecoder.cs" />
-    <Compile Include="NAudio\Codecs\ALawEncoder.cs" />
-    <Compile Include="NAudio\Codecs\G722Codec.cs" />
-    <Compile Include="NAudio\Codecs\MuLawDecoder.cs" />
-    <Compile Include="NAudio\Codecs\MuLawEncoder.cs" />
+    <Compile Include="NAudio\Dmo\AudioMediaSubtypes.cs" />
+    <Compile Include="NAudio\Dmo\DmoDescriptor.cs" />
+    <Compile Include="NAudio\Dmo\DmoEnumerator.cs" />
+    <Compile Include="NAudio\Dmo\DmoEnumFlags.cs" />
+    <Compile Include="NAudio\Dmo\DmoGuids.cs" />
+    <Compile Include="NAudio\Dmo\DmoHResults.cs" />
+    <Compile Include="NAudio\Dmo\DmoInputDataBufferFlags.cs" />
+    <Compile Include="NAudio\Dmo\DmoInputStatusFlags.cs" />
+    <Compile Include="NAudio\Dmo\DmoInterop.cs" />
+    <Compile Include="NAudio\Dmo\DmoMediaType.cs" />
+    <Compile Include="NAudio\Dmo\DmoOutputDataBuffer.cs" />
+    <Compile Include="NAudio\Dmo\DmoOutputDataBufferFlags.cs" />
+    <Compile Include="NAudio\Dmo\DmoPartialMediaType.cs" />
+    <Compile Include="NAudio\Dmo\DmoProcessOutputFlags.cs" />
+    <Compile Include="NAudio\Dmo\DmoSetTypeFlags.cs" />
+    <Compile Include="NAudio\Dmo\IEnumDmo.cs" />
+    <Compile Include="NAudio\Dmo\IMediaBuffer.cs" />
+    <Compile Include="NAudio\Dmo\IMediaObject.cs" />
+    <Compile Include="NAudio\Dmo\IMediaParamInfo.cs" />
+    <Compile Include="NAudio\Dmo\InputStreamInfoFlags.cs" />
+    <Compile Include="NAudio\Dmo\IWMResamplerProps.cs" />
+    <Compile Include="NAudio\Dmo\MediaBuffer.cs" />
+    <Compile Include="NAudio\Dmo\MediaObject.cs" />
+    <Compile Include="NAudio\Dmo\MediaObjectSizeInfo.cs" />
+    <Compile Include="NAudio\Dmo\MediaParamInfo.cs" />
+    <Compile Include="NAudio\Dmo\MediaTypes.cs" />
+    <Compile Include="NAudio\Dmo\OutputStreamInfoFlags.cs" />
+    <Compile Include="NAudio\Dmo\ResamplerMediaObject.cs" />
+    <Compile Include="NAudio\Dmo\WindowsMediaMp3Decoder.cs" />
+    <Compile Include="NAudio\Dsp\BiQuadFilter.cs" />
+    <Compile Include="NAudio\Dsp\Complex.cs" />
+    <Compile Include="NAudio\Dsp\EnvelopeDetector.cs" />
+    <Compile Include="NAudio\Dsp\FastFourierTransform.cs" />
+    <Compile Include="NAudio\Dsp\ImpulseResponseConvolution.cs" />
+    <Compile Include="NAudio\Dsp\ShiftBuffer.cs" />
+    <Compile Include="NAudio\Dsp\SimpleCompressor.cs" />
+    <Compile Include="NAudio\Dsp\SimpleGate.cs" />
+    <Compile Include="NAudio\Midi\MidiInterop.cs" />
+    <Compile Include="NAudio\Mixer\MixerInterop.cs" />
+    <Compile Include="NAudio\Utils\Decibels.cs" />
+    <Compile Include="NAudio\Utils\MergeSort.cs" />
+    <Compile Include="NAudio\Utils\ProgressEventArgs.cs" />
+    <Compile Include="NAudio\Wave\Asio\ASIOSampleConvertor.cs" />
+    <Compile Include="NAudio\Wave\Compression\AcmInterop.cs" />
+    <Compile Include="NAudio\Wave\MmeInterop\WaveInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NAudio\CoreAudioApi\AudioCaptureClient.cs" />
     <Compile Include="NAudio\CoreAudioApi\AudioClient.cs" />
@@ -152,46 +191,6 @@
     <Compile Include="NAudio\CoreAudioApi\PropertyStoreProperty.cs" />
     <Compile Include="NAudio\CoreAudioApi\PropVariant.cs" />
     <Compile Include="NAudio\CoreAudioApi\Role.cs" />
-    <Compile Include="NAudio\Dmo\AudioMediaSubtypes.cs" />
-    <Compile Include="NAudio\Dmo\DmoDescriptor.cs" />
-    <Compile Include="NAudio\Dmo\DmoEnumerator.cs" />
-    <Compile Include="NAudio\Dmo\DmoEnumFlags.cs" />
-    <Compile Include="NAudio\Dmo\DmoGuids.cs" />
-    <Compile Include="NAudio\Dmo\DmoHResults.cs" />
-    <Compile Include="NAudio\Dmo\DmoInputDataBufferFlags.cs" />
-    <Compile Include="NAudio\Dmo\DmoInputStatusFlags.cs" />
-    <Compile Include="NAudio\Dmo\DmoInterop.cs" />
-    <Compile Include="NAudio\Dmo\DmoMediaType.cs" />
-    <Compile Include="NAudio\Dmo\DmoOutputDataBuffer.cs" />
-    <Compile Include="NAudio\Dmo\DmoOutputDataBufferFlags.cs" />
-    <Compile Include="NAudio\Dmo\DmoPartialMediaType.cs" />
-    <Compile Include="NAudio\Dmo\DmoProcessOutputFlags.cs" />
-    <Compile Include="NAudio\Dmo\DmoSetTypeFlags.cs" />
-    <Compile Include="NAudio\Dmo\IEnumDmo.cs" />
-    <Compile Include="NAudio\Dmo\IMediaBuffer.cs" />
-    <Compile Include="NAudio\Dmo\IMediaObject.cs" />
-    <Compile Include="NAudio\Dmo\IMediaParamInfo.cs" />
-    <Compile Include="NAudio\Dmo\InputStreamInfoFlags.cs" />
-    <Compile Include="NAudio\Dmo\IWMResamplerProps.cs" />
-    <Compile Include="NAudio\Dmo\MediaBuffer.cs" />
-    <Compile Include="NAudio\Dmo\MediaObject.cs" />
-    <Compile Include="NAudio\Dmo\MediaObjectSizeInfo.cs" />
-    <Compile Include="NAudio\Dmo\MediaParamInfo.cs" />
-    <Compile Include="NAudio\Dmo\MediaTypes.cs" />
-    <Compile Include="NAudio\Dmo\OutputStreamInfoFlags.cs" />
-    <Compile Include="NAudio\Dmo\ResamplerMediaObject.cs" />
-    <Compile Include="NAudio\Dmo\WindowsMediaMp3Decoder.cs" />
-    <Compile Include="NAudio\Dsp\BiQuadFilter.cs" />
-    <Compile Include="NAudio\Dsp\Complex.cs" />
-    <Compile Include="NAudio\Dsp\EnvelopeDetector.cs" />
-    <Compile Include="NAudio\Dsp\FastFourierTransform.cs" />
-    <Compile Include="NAudio\Dsp\ImpulseResponseConvolution.cs" />
-    <Compile Include="NAudio\Dsp\ShiftBuffer.cs" />
-    <Compile Include="NAudio\Dsp\SimpleCompressor.cs" />
-    <Compile Include="NAudio\Dsp\SimpleGate.cs" />
-    <Compile Include="NAudio\FileFormats\Map\CakewalkDrumMapping.cs" />
-    <Compile Include="NAudio\FileFormats\Map\CakewalkMapFile.cs" />
-    <Compile Include="NAudio\FileFormats\Map\MapBlockHeader.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\ChannelMode.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\DmoMp3FrameDecompressor.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\Id3v2Tag.cs" />
@@ -201,31 +200,6 @@
     <Compile Include="NAudio\FileFormats\Mp3\MpegLayer.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\MpegVersion.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\XingHeader.cs" />
-    <Compile Include="NAudio\FileFormats\Sfz\SfzFileReader.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\Generator.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\GeneratorBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\GeneratorEnum.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\InfoChunk.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\Instrument.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\InstrumentBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\Modulator.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\ModulatorBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\ModulatorType.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\Preset.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\PresetBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\PresetsChunk.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\RiffChunk.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SampleDataChunk.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SampleHeader.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SampleHeaderBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SampleMode.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SFSampleLink.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SFVersion.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SFVersionBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\SoundFont.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\StructureBuilder.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\Zone.cs" />
-    <Compile Include="NAudio\FileFormats\SoundFont\ZoneBuilder.cs" />
     <Compile Include="NAudio\FileFormats\Wav\WaveFileChunkReader.cs" />
     <Compile Include="Forms\OAuth.cs">
       <SubType>Form</SubType>
@@ -234,42 +208,6 @@
       <DependentUpon>OAuth.cs</DependentUpon>
     </Compile>
     <Compile Include="API\Main.cs" />
-    <Compile Include="NAudio\Gui\Fader.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\Graph\Graph.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\LcdPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\PanSlider.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\Pot.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\Pot.Designer.cs">
-      <DependentUpon>Pot.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NAudio\Gui\VolumeMeter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\VolumeMeter.Designer.cs">
-      <DependentUpon>VolumeMeter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NAudio\Gui\VolumeSlider.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\WaveformPainter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="NAudio\Gui\WaveformPainter.Designer.cs">
-      <DependentUpon>WaveformPainter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NAudio\Gui\WaveViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="API\RainmeterAPI.cs" />
     <Compile Include="AudioPlayer\Player.cs" />
     <Compile Include="NAudio\Midi\ChannelAfterTouchEvent.cs" />
@@ -286,7 +224,6 @@
     <Compile Include="NAudio\Midi\MidiIn.cs" />
     <Compile Include="NAudio\Midi\MidiInCapabilities.cs" />
     <Compile Include="NAudio\Midi\MidiInMessageEventArgs.cs" />
-    <Compile Include="NAudio\Midi\MidiInterop.cs" />
     <Compile Include="NAudio\Midi\MidiMessage.cs" />
     <Compile Include="NAudio\Midi\MidiOut.cs" />
     <Compile Include="NAudio\Midi\MidiOutCapabilities.cs" />
@@ -309,7 +246,6 @@
     <Compile Include="NAudio\Mixer\MixerControl.cs" />
     <Compile Include="NAudio\Mixer\MixerControlType.cs" />
     <Compile Include="NAudio\Mixer\MixerFlags.cs" />
-    <Compile Include="NAudio\Mixer\MixerInterop.cs" />
     <Compile Include="NAudio\Mixer\MixerLine.cs" />
     <Compile Include="NAudio\Mixer\MixerLineComponentType.cs" />
     <Compile Include="NAudio\Mixer\SignedMixerControl.cs" />
@@ -318,12 +254,9 @@
     <Compile Include="NAudio\Utils\ByteArrayExtensions.cs" />
     <Compile Include="NAudio\Utils\ByteEncoding.cs" />
     <Compile Include="NAudio\Utils\CircularBuffer.cs" />
-    <Compile Include="NAudio\Utils\Decibels.cs" />
     <Compile Include="NAudio\Utils\FileAssociations.cs" />
     <Compile Include="NAudio\Utils\HResult.cs" />
     <Compile Include="NAudio\Utils\IgnoreDisposeStream.cs" />
-    <Compile Include="NAudio\Utils\MergeSort.cs" />
-    <Compile Include="NAudio\Utils\ProgressEventArgs.cs" />
     <Compile Include="NAudio\Utils\ProgressLog.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -334,7 +267,6 @@
     <Compile Include="NAudio\Wave\Asio\ASIODriver.cs" />
     <Compile Include="NAudio\Wave\Asio\AsioDriverCapability.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriverExt.cs" />
-    <Compile Include="NAudio\Wave\Asio\ASIOSampleConvertor.cs" />
     <Compile Include="NAudio\Wave\Asio\AsioSampleType.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIOStructures.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmDriver.cs" />
@@ -349,7 +281,6 @@
     <Compile Include="NAudio\Wave\Compression\AcmFormatSuggestFlags.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmFormatTag.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmFormatTagDetails.cs" />
-    <Compile Include="NAudio\Wave\Compression\AcmInterop.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmMetrics.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmStream.cs" />
     <Compile Include="NAudio\Wave\Compression\AcmStreamConvertFlags.cs" />
@@ -369,7 +300,6 @@
     <Compile Include="NAudio\Wave\MmeInterop\WaveHeaderFlags.cs" />
     <Compile Include="NAudio\Wave\MmeInterop\WaveInCapabilities.cs" />
     <Compile Include="NAudio\Wave\MmeInterop\WaveInEventArgs.cs" />
-    <Compile Include="NAudio\Wave\MmeInterop\WaveInterop.cs" />
     <Compile Include="NAudio\Wave\MmeInterop\WaveOutCapabilities.cs" />
     <Compile Include="NAudio\Wave\MmeInterop\WaveOutSupport.cs" />
     <Compile Include="NAudio\Wave\MmeInterop\WaveWindow.cs">
@@ -475,6 +405,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OAuth.resx">
       <DependentUpon>OAuth.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OAuth.ru.resx">
       <DependentUpon>OAuth.cs</DependentUpon>
@@ -485,36 +416,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <EmbeddedResource Include="NAudio\Gui\Fader.resx">
-      <DependentUpon>Fader.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\Graph\Graph.resx">
-      <DependentUpon>Graph.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\LcdPanel.resx">
-      <DependentUpon>LcdPanel.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\PanSlider.resx">
-      <DependentUpon>PanSlider.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\Pot.resx">
-      <DependentUpon>Pot.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\VolumeSlider.resx">
-      <DependentUpon>VolumeSlider.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NAudio\Gui\WaveViewer.resx">
-      <DependentUpon>WaveViewer.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

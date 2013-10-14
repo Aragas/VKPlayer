@@ -1,74 +1,121 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.Wave;
-using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
+using NAudio.Wave;
 
 // for consistency this should be in NAudio.Wave namespace, but left as it is for backwards compatibility
+
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Capture using Wasapi
-    /// See http://msdn.microsoft.com/en-us/library/dd370800%28VS.85%29.aspx
+    ///     Audio Capture using Wasapi
+    ///     See http://msdn.microsoft.com/en-us/library/dd370800%28VS.85%29.aspx
     /// </summary>
     public class WasapiCapture : IWaveIn
     {
         private const long REFTIMES_PER_SEC = 10000000;
-        private const long REFTIMES_PER_MILLISEC = 10000;        
-        private volatile bool stop;
-        private byte[] recordBuffer;
-        private Thread captureThread;
+        private const long REFTIMES_PER_MILLISEC = 10000;
         private AudioClient audioClient;
         private int bytesPerFrame;
-        private WaveFormat waveFormat;
+        private Thread captureThread;
         private bool initialized;
+        private byte[] recordBuffer;
+        private volatile bool stop;
+        private WaveFormat waveFormat;
 
         /// <summary>
-        /// Indicates recorded data is available 
+        ///     Initialises a new instance of the WASAPI capture class
         /// </summary>
-        public event EventHandler<WaveInEventArgs> DataAvailable;
-
-        /// <summary>
-        /// Indicates that all recorded data has now been received.
-        /// </summary>
-        public event EventHandler<StoppedEventArgs> RecordingStopped;
-
-        /// <summary>
-        /// Initialises a new instance of the WASAPI capture class
-        /// </summary>
-        public WasapiCapture() : 
+        public WasapiCapture() :
             this(GetDefaultCaptureDevice())
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the WASAPI capture class
+        ///     Initialises a new instance of the WASAPI capture class
         /// </summary>
         /// <param name="captureDevice">Capture device to use</param>
         public WasapiCapture(MMDevice captureDevice)
         {
-            this.audioClient = captureDevice.AudioClient;
-            this.waveFormat = audioClient.MixFormat;
+            audioClient = captureDevice.AudioClient;
+            waveFormat = audioClient.MixFormat;
         }
 
         /// <summary>
-        /// Recording wave format
+        ///     Indicates recorded data is available
         /// </summary>
-        public virtual WaveFormat WaveFormat 
+        public event EventHandler<WaveInEventArgs> DataAvailable;
+
+        /// <summary>
+        ///     Indicates that all recorded data has now been received.
+        /// </summary>
+        public event EventHandler<StoppedEventArgs> RecordingStopped;
+
+        /// <summary>
+        ///     Recording wave format
+        /// </summary>
+        public virtual WaveFormat WaveFormat
         {
-            get { return this.waveFormat; }
-            set { this.waveFormat = value; }
+            get { return waveFormat; }
+            set { waveFormat = value; }
         }
 
         /// <summary>
-        /// Gets the default audio capture device
+        ///     Start Recording
+        /// </summary>
+        public void StartRecording()
+        {
+            InitializeCaptureDevice();
+            ThreadStart start = delegate { CaptureThread(audioClient); };
+            captureThread = new Thread(start);
+
+            Debug.WriteLine("Thread starting...");
+            stop = false;
+            captureThread.Start();
+        }
+
+        /// <summary>
+        ///     Stop Recording
+        /// </summary>
+        public void StopRecording()
+        {
+            if (captureThread != null)
+            {
+                stop = true;
+
+                Debug.WriteLine("Thread ending...");
+
+                // wait for thread to end
+                captureThread.Join();
+                captureThread = null;
+
+                Debug.WriteLine("Done.");
+
+                stop = false;
+            }
+        }
+
+        /// <summary>
+        ///     Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            StopRecording();
+            if (audioClient != null)
+            {
+                audioClient.Dispose();
+                audioClient = null;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the default audio capture device
         /// </summary>
         /// <returns>The default audio capture device</returns>
         public static MMDevice GetDefaultCaptureDevice()
         {
-            MMDeviceEnumerator devices = new MMDeviceEnumerator();
+            var devices = new MMDeviceEnumerator();
             return devices.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
         }
 
@@ -77,71 +124,36 @@ namespace NAudio.CoreAudioApi
             if (initialized)
                 return;
 
-            long requestedDuration = REFTIMES_PER_MILLISEC * 100;
+            long requestedDuration = REFTIMES_PER_MILLISEC*100;
 
             if (!audioClient.IsFormatSupported(AudioClientShareMode.Shared, WaveFormat))
             {
                 throw new ArgumentException("Unsupported Wave Format");
             }
-            
-            var streamFlags = GetAudioClientStreamFlags();
+
+            AudioClientStreamFlags streamFlags = GetAudioClientStreamFlags();
 
             audioClient.Initialize(AudioClientShareMode.Shared,
                 streamFlags,
                 requestedDuration,
                 0,
-                this.waveFormat,
+                waveFormat,
                 Guid.Empty);
 
             int bufferFrameCount = audioClient.BufferSize;
-            this.bytesPerFrame = this.waveFormat.Channels * this.waveFormat.BitsPerSample / 8;
-            this.recordBuffer = new byte[bufferFrameCount * bytesPerFrame];
-            Debug.WriteLine(string.Format("record buffer size = {0}", this.recordBuffer.Length));
+            bytesPerFrame = waveFormat.Channels*waveFormat.BitsPerSample/8;
+            recordBuffer = new byte[bufferFrameCount*bytesPerFrame];
+            Debug.WriteLine(string.Format("record buffer size = {0}", recordBuffer.Length));
 
             initialized = true;
         }
 
         /// <summary>
-        /// To allow overrides to specify different flags (e.g. loopback)
+        ///     To allow overrides to specify different flags (e.g. loopback)
         /// </summary>
         protected virtual AudioClientStreamFlags GetAudioClientStreamFlags()
         {
             return AudioClientStreamFlags.None;
-        }
-
-        /// <summary>
-        /// Start Recording
-        /// </summary>
-        public void StartRecording()
-        {
-            InitializeCaptureDevice();
-            ThreadStart start = delegate { this.CaptureThread(this.audioClient); };
-            this.captureThread = new Thread(start);
-
-            Debug.WriteLine("Thread starting...");
-            this.stop = false;
-            this.captureThread.Start();	
-        }
-
-        /// <summary>
-        /// Stop Recording
-        /// </summary>
-        public void StopRecording()
-        {
-            if (this.captureThread != null)
-            {
-                this.stop = true;
-
-                Debug.WriteLine("Thread ending...");
-
-                // wait for thread to end
-                this.captureThread.Join();
-                this.captureThread = null;
-
-                Debug.WriteLine("Done.");
-
-                this.stop = false;
-            }
         }
 
         private void CaptureThread(AudioClient client)
@@ -162,7 +174,7 @@ namespace NAudio.CoreAudioApi
             }
 
             RaiseRecordingStopped(exception);
-            System.Diagnostics.Debug.WriteLine("stop wasapi");
+            Debug.WriteLine("stop wasapi");
         }
 
         private void DoRecording(AudioClient client)
@@ -171,14 +183,14 @@ namespace NAudio.CoreAudioApi
             int bufferFrameCount = audioClient.BufferSize;
 
             // Calculate the actual duration of the allocated buffer.
-            long actualDuration = (long)((double)REFTIMES_PER_SEC *
-                             bufferFrameCount / WaveFormat.SampleRate);
-            int sleepMilliseconds = (int)(actualDuration / REFTIMES_PER_MILLISEC / 2);
+            var actualDuration = (long) ((double) REFTIMES_PER_SEC*
+                                         bufferFrameCount/WaveFormat.SampleRate);
+            var sleepMilliseconds = (int) (actualDuration/REFTIMES_PER_MILLISEC/2);
 
             AudioCaptureClient capture = client.AudioCaptureClient;
             client.Start();
             Debug.WriteLine(string.Format("sleep: {0} ms", sleepMilliseconds));
-            while (!this.stop)
+            while (!stop)
             {
                 Thread.Sleep(sleepMilliseconds);
                 ReadNextPacket(capture);
@@ -187,7 +199,7 @@ namespace NAudio.CoreAudioApi
 
         private void RaiseRecordingStopped(Exception exception)
         {
-            var handler = RecordingStopped;
+            EventHandler<StoppedEventArgs> handler = RecordingStopped;
             if (handler != null)
             {
                 handler(this, new StoppedEventArgs(exception));
@@ -207,14 +219,15 @@ namespace NAudio.CoreAudioApi
             {
                 buffer = capture.GetBuffer(out framesAvailable, out flags);
 
-                int bytesAvailable = framesAvailable * bytesPerFrame;
+                int bytesAvailable = framesAvailable*bytesPerFrame;
 
                 // apparently it is sometimes possible to read more frames than we were expecting?
                 // fix suggested by Michael Feld:
                 int spaceRemaining = Math.Max(0, recordBuffer.Length - recordBufferOffset);
                 if (spaceRemaining < bytesAvailable && recordBufferOffset > 0)
                 {
-                    if (DataAvailable != null) DataAvailable(this, new WaveInEventArgs(recordBuffer, recordBufferOffset));
+                    if (DataAvailable != null)
+                        DataAvailable(this, new WaveInEventArgs(recordBuffer, recordBufferOffset));
                     recordBufferOffset = 0;
                 }
 
@@ -234,19 +247,6 @@ namespace NAudio.CoreAudioApi
             if (DataAvailable != null)
             {
                 DataAvailable(this, new WaveInEventArgs(recordBuffer, recordBufferOffset));
-            }
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            StopRecording();
-            if (audioClient != null)
-            {
-                audioClient.Dispose();
-                audioClient = null;
             }
         }
     }

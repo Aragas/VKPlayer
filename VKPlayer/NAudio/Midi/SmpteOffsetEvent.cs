@@ -1,28 +1,26 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace NAudio.Midi
 {
-    class SmpteOffsetEvent : MetaEvent
+    internal class SmpteOffsetEvent : MetaEvent
     {
-        private byte hours;
-        private byte minutes;
-        private byte seconds;
-        private byte frames;
-        private byte subFrames; // 100ths of a frame
-        
+        private readonly byte frames;
+        private readonly byte hours;
+        private readonly byte minutes;
+        private readonly byte seconds;
+        private readonly byte subFrames; // 100ths of a frame
+
         /// <summary>
-        /// Reads a new time signature event from a MIDI stream
+        ///     Reads a new time signature event from a MIDI stream
         /// </summary>
         /// <param name="br">The MIDI stream</param>
         /// <param name="length">The data length</param>
-        public SmpteOffsetEvent(BinaryReader br,int length) 
+        public SmpteOffsetEvent(BinaryReader br, int length)
         {
-            if(length != 5) 
+            if (length != 5)
             {
-                throw new FormatException(String.Format("Invalid SMPTE Offset length: Got {0}, expected 5",length));
+                throw new FormatException(String.Format("Invalid SMPTE Offset length: Got {0}, expected 5", length));
             }
             hours = br.ReadByte();
             minutes = br.ReadByte();
@@ -32,7 +30,7 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Hours
+        ///     Hours
         /// </summary>
         public int Hours
         {
@@ -40,7 +38,7 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Minutes
+        ///     Minutes
         /// </summary>
         public int Minutes
         {
@@ -48,7 +46,7 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Seconds
+        ///     Seconds
         /// </summary>
         public int Seconds
         {
@@ -56,7 +54,7 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// Frames
+        ///     Frames
         /// </summary>
         public int Frames
         {
@@ -64,28 +62,28 @@ namespace NAudio.Midi
         }
 
         /// <summary>
-        /// SubFrames
+        ///     SubFrames
         /// </summary>
         public int SubFrames
         {
             get { return subFrames; }
         }
 
-        
+
         /// <summary>
-        /// Describes this time signature event
+        ///     Describes this time signature event
         /// </summary>
         /// <returns>A string describing this event</returns>
-        public override string ToString() 
+        public override string ToString()
         {
             return String.Format("{0} {1}:{2}:{3}:{4}:{5}",
-                base.ToString(),hours,minutes,seconds,frames,subFrames);
+                base.ToString(), hours, minutes, seconds, frames, subFrames);
         }
 
         /// <summary>
-        /// Calls base class export first, then exports the data 
-        /// specific to this event
-        /// <seealso cref="MidiEvent.Export">MidiEvent.Export</seealso>
+        ///     Calls base class export first, then exports the data
+        ///     specific to this event
+        ///     <seealso cref="MidiEvent.Export">MidiEvent.Export</seealso>
         /// </summary>
         public override void Export(ref long absoluteTime, BinaryWriter writer)
         {
@@ -98,4 +96,3 @@ namespace NAudio.Midi
         }
     }
 }
-

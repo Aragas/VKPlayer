@@ -1,17 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
-namespace VKPlayer
+namespace Rainmeter.Forms
 {
     public partial class OAuth : Form
     {
-        public static void OAuthRun()
-        {
-            Application.Run(new OAuth());
-        }
-
         public static string Token;
         public static string Id;
 
@@ -19,11 +12,15 @@ namespace VKPlayer
         {
             InitializeComponent();
 
-            string url = "https://oauth.vk.com/authorize?client_id=3328403"
-                + "&redirect_uri=https://oauth.vk.com/blank.html"
-                + "&scope=audio&display=popup&response_type=token";
+            const string url = "https://oauth.vk.com/authorize?client_id=3328403"
+                               + "&redirect_uri=https://oauth.vk.com/blank.html"
+                               + "&scope=audio&display=popup&response_type=token";
             webBrowser1.Navigate(url);
-            return;
+        }
+
+        public static void OAuthRun()
+        {
+            Application.Run(new OAuth());
         }
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -37,7 +34,7 @@ namespace VKPlayer
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.CoreAudioApi.Interfaces;
 using System.Runtime.InteropServices;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
     /// <summary>
-    /// Audio Render Client
+    ///     Audio Render Client
     /// </summary>
     public class AudioRenderClient : IDisposable
     {
-        IAudioRenderClient audioRenderClientInterface;
+        private IAudioRenderClient audioRenderClientInterface;
 
         internal AudioRenderClient(IAudioRenderClient audioRenderClientInterface)
         {
@@ -19,7 +17,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Gets a pointer to the buffer
+        ///     Gets a pointer to the buffer
         /// </summary>
         /// <param name="numFramesRequested">Number of frames requested</param>
         /// <returns>Pointer to the buffer</returns>
@@ -31,11 +29,11 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Release buffer
+        ///     Release buffer
         /// </summary>
         /// <param name="numFramesWritten">Number of frames written</param>
         /// <param name="bufferFlags">Buffer flags</param>
-        public void ReleaseBuffer(int numFramesWritten,AudioClientBufferFlags bufferFlags)
+        public void ReleaseBuffer(int numFramesWritten, AudioClientBufferFlags bufferFlags)
         {
             Marshal.ThrowExceptionForHR(audioRenderClientInterface.ReleaseBuffer(numFramesWritten, bufferFlags));
         }
@@ -43,7 +41,7 @@ namespace NAudio.CoreAudioApi
         #region IDisposable Members
 
         /// <summary>
-        /// Release the COM object
+        ///     Release the COM object
         /// </summary>
         public void Dispose()
         {

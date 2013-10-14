@@ -4,9 +4,9 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using NAudio.Wave;
-using System.ComponentModel;
+using Rainmeter.Methods;
 
-namespace VKPlayer
+namespace Rainmeter.AudioPlayer
 {
     //To do:
     //Save mp3 to disk while playing from url.
@@ -21,235 +21,251 @@ namespace VKPlayer
             Buffering,
             Ready
         }
-        public static Playing option = Playing.Init;
 
-        internal static WaveChannel32 volumeStream;
-        static GetStream gStream = new GetStream();
-        static WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-        static Audio au = new Audio();
+        public static Playing Option = Playing.Init;
+
+        internal static WaveChannel32 VolumeStream;
+        private static GetStream _gStream = new GetStream();
+        private static WaveOut _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+        private static readonly Audio Au = new Audio();
 
         public static string Token;
         public static string Id;
+
         public static bool Played
         {
             get
             {
-                if (option == Playing.Ready)
+                if (Option == Playing.Ready)
                 {
-                    if (Duration > volumeStream.CurrentTime.TotalSeconds) return false;
-                    else return true;
+                    if (Duration > VolumeStream.CurrentTime.TotalSeconds) return false;
+                    return true;
                 }
-                else return false;
+                return false;
             }
         }
 
         #region Internal
-        private static bool arrayExists
+
+        private static int _numb;
+        private static string[] _array;
+
+        private static bool ArrayExists
         {
             get
             {
                 if (_array != null) return true;
-                else return false;
+                return false;
             }
         }
-        private static int numb;
-        private static string[] _array;
-        private static string[] array
+
+        private static string[] Array
         {
             get
             {
-                if (arrayExists) return _array;
-                else
-                {
-                    au.token = Token;
-                    au.id = Id;
-                    _array = au.AudioList();
-                    return _array;
-                }
+                if (ArrayExists) return _array;
+                Au.Token = Token;
+                Au.Id = Id;
+                _array = Au.AudioList();
+                return _array;
             }
         }
-        private static string url
+
+        internal static string Url
         {
-            get
-            {
-                return array[numb].Split('#')[4];
-            }
+            get { return Array[_numb].Split('#')[4]; }
         }
+
         #endregion
 
         #region Variables
+
+        public static bool Repeat = false;
+        public static bool Shuffle = false;
+
         public static string Artist
         {
             get
             {
-                if (arrayExists) return array[numb].Split('#')[1];
-                else return null; 
+                if (ArrayExists) return Array[_numb].Split('#')[1];
+                return null;
             }
         }
+
         public static string Title
         {
             get
             {
-                if (arrayExists) return array[numb].Split('#')[2];
-                else return null;
-
+                if (ArrayExists) return Array[_numb].Split('#')[2];
+                return null;
             }
         }
+
         public static double Duration
         {
             get
             {
-                if (arrayExists) return Convert.ToInt32(array[numb].Split('#')[3]);
-                else return 0.0;
+                if (ArrayExists) return Convert.ToInt32(Array[_numb].Split('#')[3]);
+                return 0.0;
             }
         }
+
         public static double State
         {
             get
             {
-                if (waveOut.PlaybackState == PlaybackState.Playing) return 1.0;
-                else if (waveOut.PlaybackState == PlaybackState.Paused) return 2.0;
-                else return 0.0;
+                if (_waveOut.PlaybackState == PlaybackState.Playing) return 1.0;
+                if (_waveOut.PlaybackState == PlaybackState.Paused) return 2.0;
+                return 0.0;
             }
         }
+
         public static double Position
         {
             get
             {
-                if (waveOut.PlaybackState != PlaybackState.Stopped)
+                if (_waveOut.PlaybackState != PlaybackState.Stopped)
                 {
                     if (!Played)
                     {
-                        return volumeStream.CurrentTime.TotalSeconds;
+                        return VolumeStream.CurrentTime.TotalSeconds;
                     }
-                    else return 0.0;
+                    return 0.0;
                 }
-                else return 0.0;
+                return 0.0;
             }
         }
+
         public static double Progress
         {
             get
             {
-                if (option == Playing.Ready)
+                if (Option == Playing.Ready)
                 {
-                    return Position / Duration;
+                    return Position/Duration;
                 }
-                else return 0.0;
+                return 0.0;
             }
         }
-        public static bool Repeat = false;
-        public static bool Shuffle = false;
+
         #endregion
 
         #region Execute
-        public static void Execute(string Command, string token, string id)
+
+        public static void Execute(string command, string token, string id)
         {
             Token = token;
             Id = id;
 
-            if (Command == "PlayPause") PlayPause();
-            else if (Command == "Play") PlayPause();
-            else if (Command == "Pause") PlayPause();
-            else if (Command == "Stop") Stop();
-            else if (Command == "Next") Next();
-            else if (Command == "Previous") Previous();
-            else if (Command.Contains("SetVolume")) SetVolume(Command.Remove(0,10));
-            else if (Command.Contains("SetShuffle")) SetShuffle(Command.Remove(0, 11));
-            else if (Command.Contains("SetRepeat")) SetRepeat(Command.Remove(0, 10));
-            else if (Command.Contains("SetPosition")) SetPosition(Command.Remove(0, 12));
-            else if (Command.Contains("SetRating")) SetRating(Command.Remove(0, 10));
+            if (command == "PlayPause") PlayPause();
+            else if (command == "Play") PlayPause();
+            else if (command == "Pause") PlayPause();
+            else if (command == "Stop") Stop();
+            else if (command == "Next") Next();
+            else if (command == "Previous") Previous();
+            else if (command.Contains("SetVolume")) SetVolume(command.Remove(0, 10));
+            else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
+            else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
+            else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
+            else if (command.Contains("SetRating")) SetRating(command.Remove(0, 10));
             else return;
         }
 
         public static void PlayPause()
         {
-            if (option == Playing.Ready)
+            if (Option == Playing.Ready)
             {
-                if (waveOut.PlaybackState == PlaybackState.Playing) pause();
-                else if (waveOut.PlaybackState == PlaybackState.Paused) play();
-                else if (waveOut.PlaybackState == PlaybackState.Stopped) Play();
+                if (_waveOut.PlaybackState == PlaybackState.Playing) Pause();
+                else if (_waveOut.PlaybackState == PlaybackState.Paused) _play();
+                else if (_waveOut.PlaybackState == PlaybackState.Stopped) Play();
             }
-            else if (option == Playing.Init)
+            else if (Option == Playing.Init)
             {
                 #region
+
                 ThreadStart work = delegate
                 {
                     try
                     {
                         Play();
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 };
                 new Thread(work).Start();
+
                 #endregion
             }
         }
+
         public static void Stop()
         {
-            waveOut.Stop();
+            _waveOut.Stop();
         }
+
         public static void Next()
         {
-            if (waveOut.PlaybackState != PlaybackState.Stopped)
+            if (_waveOut.PlaybackState != PlaybackState.Stopped)
             {
-                if (numb < array.Length)
+                if (_numb < Array.Length)
                 {
-                    numb += 1;
+                    _numb += 1;
 
                     Stop();
-                    waveOut.Dispose();
-                    waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                    gStream.Dispose();
-                    gStream = new GetStream();
+                    _waveOut.Dispose();
+                    _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                    _gStream.Dispose();
+                    _gStream = new GetStream();
                     Play();
                 }
             }
         }
+
         public static void Previous()
         {
-            if (waveOut.PlaybackState != PlaybackState.Stopped)
+            if (_waveOut.PlaybackState != PlaybackState.Stopped)
             {
-
-                if (numb > 0)
+                if (_numb > 0)
                 {
-                    numb -= 1;;
+                    _numb -= 1;
 
                     Stop();
-                    waveOut.Dispose();
-                    waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                    gStream.Dispose();
-                    gStream = new GetStream();
+                    _waveOut.Dispose();
+                    _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                    _gStream.Dispose();
+                    _gStream = new GetStream();
                     Play();
                 }
             }
         }
 
-        public static void SetVolume(string Value)
+        public static void SetVolume(string value)
         {
-            if (Value.Contains("+") || Value.Contains("-"))
+            if (value.Contains("+") || value.Contains("-"))
             {
-                Value.Remove(0, 1);
-                volumeStream.Volume += Convert.ToSingle(Convert.ToInt32(Value) / 100);
+                value.Remove(0, 1);
+                VolumeStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
             }
             else
             {
 #if DEBUG
-                volumeStream.Volume = Convert.ToSingle(Convert.ToInt32(Value) / 100);
+                VolumeStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
 #else
                 try
                 {
-                    volumeStream.Volume = Convert.ToSingle(Convert.ToInt32(Value) / 100);
+                    VolumeStream.Volume = Convert.ToSingle(Convert.ToInt32(value) / 100);
                 }
                 catch { }
 #endif
             }
         }
-        public static void SetRepeat(string Value)
+
+        public static void SetRepeat(string value)
         {
-            if (Value == "1") Repeat = true;
-            else if (Value == "0") Repeat = false;
-            else if (Value == "-1")
+            if (value == "1") Repeat = true;
+            else if (value == "0") Repeat = false;
+            else if (value == "-1")
             {
                 if (Repeat)
                 {
@@ -263,11 +279,12 @@ namespace VKPlayer
             }
             else ;
         }
-        public static void SetShuffle(string Value)
+
+        public static void SetShuffle(string value)
         {
-            if (Value == "1") Shuffle = true;
-            else if (Value == "0") Shuffle = false;
-            else if (Value == "-1")
+            if (value == "1") Shuffle = true;
+            else if (value == "0") Shuffle = false;
+            else if (value == "-1")
             {
                 if (Shuffle)
                 {
@@ -281,30 +298,20 @@ namespace VKPlayer
             }
             else ;
         }
-        public static void SetPosition(string Value)
+
+        public static void SetPosition(string value)
         {
-            if (Value.Contains("+") || Value.Contains("-"))
+            if (value.Contains("+") || value.Contains("-"))
             {
-                Value.Remove(0, 1);
+                value.Remove(0, 1);
                 //
-            }
-            else
-            {
-#if DEBUG
-                //
-#else
-                try
-                {
-                //
-                }
-                catch { }
-#endif
             }
         }
-        public static void SetRating(string Value)
+
+        public static void SetRating(string value)
         {
-            if (Value == "1" || Value == "2" || Value == "3" ||
-                Value == "4" || Value == "5")
+            if (value == "1" || value == "2" || value == "3" ||
+                value == "4" || value == "5")
             {
             }
         }
@@ -318,18 +325,18 @@ namespace VKPlayer
             }
             else if (Shuffle)
             {
-                if (waveOut.PlaybackState != PlaybackState.Stopped)
+                if (_waveOut.PlaybackState != PlaybackState.Stopped)
                 {
-                    if (numb < array.Length)
+                    if (_numb < Array.Length)
                     {
-                        Random random = new Random();
-                        numb = random.Next(0, array.Length);
+                        var random = new Random();
+                        _numb = random.Next(0, Array.Length);
 
                         Stop();
-                        waveOut.Dispose();
-                        waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                        gStream.Dispose();
-                        gStream = new GetStream();
+                        _waveOut.Dispose();
+                        _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                        _gStream.Dispose();
+                        _gStream = new GetStream();
                         Play();
                     }
                 }
@@ -342,81 +349,82 @@ namespace VKPlayer
 
         private static void Play()
         {
-            gStream.url = url;
+            _gStream.Url = Url;
 
-            waveOut.Init(gStream.Wave());
-            volumeStream.Volume = 0.7F;
-            waveOut.Play();
+            _waveOut.Init(_gStream.Wave());
+            VolumeStream.Volume = 0.7F;
+            _waveOut.Play();
         }
-        private static void play()
+
+        private static void _play()
         {
-            waveOut.Play();
+            _waveOut.Play();
         }
-        private static void pause()
+
+        private static void Pause()
         {
-            waveOut.Pause();
+            _waveOut.Pause();
         }
 
         #endregion
-
     }
 
     internal class GetStream : IDisposable
     {
+        private readonly Stream _ms = new MemoryStream();
         private GCHandle gch;
-        private Stream ms = new MemoryStream();
 
-        public string url { get; set; }
+        public string Url { get; set; }
+
+        public void Dispose()
+        {
+            Close();
+            GC.SuppressFinalize(this);
+        }
 
         public WaveStream Wave()
         {
             #region Download
+
             new Thread(delegate(object o)
             {
-                var response = HttpWebRequest.Create(url).GetResponse();
-                using (var stream = response.GetResponseStream())
+                WebResponse response = WebRequest.Create(Url).GetResponse();
+                using (Stream stream = response.GetResponseStream())
                 {
-                    byte[] buffer = new byte[65536]; // 64KB chunks
+                    var buffer = new byte[65536]; // 64KB chunks
                     int read;
                     while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
-                        var pos = ms.Position;
-                        ms.Position = ms.Length;
-                        ms.Write(buffer, 0, read);
-                        ms.Position = pos;
+                        long pos = _ms.Position;
+                        _ms.Position = _ms.Length;
+                        _ms.Write(buffer, 0, read);
+                        _ms.Position = pos;
                     }
                 }
             }).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
-            while (ms.Length < 65536 * 10)
+            while (_ms.Length < 65536*10)
             {
-                if (Player.option != Player.Playing.Buffering) Player.option = Player.Playing.Buffering;
+                if (Player.Option != Player.Playing.Buffering) Player.Option = Player.Playing.Buffering;
 
                 Thread.Sleep(500);
-                
             }
-            if (ms.Length > 65536 * 10) Player.option = Player.Playing.Ready;
+            if (_ms.Length > 65536*10) Player.Option = Player.Playing.Ready;
+
             #endregion
 
-            ms.Position = 0;
-            Player.volumeStream = new WaveChannel32(new Mp3FileReader(ms));
-            return Player.volumeStream;
-
+            _ms.Position = 0;
+            Player.VolumeStream = new WaveChannel32(new Mp3FileReader(_ms));
+            return Player.VolumeStream;
         }
 
         private void Close()
         {
-            if (this.gch.IsAllocated)
+            if (gch.IsAllocated)
             {
-                this.gch.Free();
+                gch.Free();
             }
         }
-        public void Dispose()
-        {
-            this.Close();
-            GC.SuppressFinalize(this);
-        }
     }
-
 }

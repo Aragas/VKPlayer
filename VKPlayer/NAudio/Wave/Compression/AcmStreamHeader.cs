@@ -1,17 +1,18 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace NAudio.Wave.Compression
 {
-    class AcmStreamHeader : IDisposable
+    internal class AcmStreamHeader : IDisposable
     {
-        private AcmStreamHeaderStruct streamHeader;
-        private byte[] sourceBuffer;
-        private GCHandle hSourceBuffer;
+        private readonly IntPtr streamHandle;
+        private readonly AcmStreamHeaderStruct streamHeader;
         private byte[] destBuffer;
-        private GCHandle hDestBuffer;
-        private IntPtr streamHandle;
         private bool firstTime;
+        private GCHandle hDestBuffer;
+        private GCHandle hSourceBuffer;
+        private byte[] sourceBuffer;
 
         public AcmStreamHeader(IntPtr streamHandle, int sourceBufferLength, int destBufferLength)
         {
@@ -26,6 +27,47 @@ namespace NAudio.Wave.Compression
             firstTime = true;
             //Prepare();
         }
+
+        public byte[] SourceBuffer
+        {
+            get { return sourceBuffer; }
+        }
+
+        public byte[] DestBuffer
+        {
+            get { return destBuffer; }
+        }
+
+        #region IDisposable Members
+
+        private bool disposed;
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                //Unprepare();
+                sourceBuffer = null;
+                destBuffer = null;
+                hSourceBuffer.Free();
+                hDestBuffer.Free();
+            }
+            disposed = true;
+        }
+
+        ~AcmStreamHeader()
+        {
+            Debug.Assert(false, "AcmStreamHeader dispose was not called");
+            Dispose(false);
+        }
+
+        #endregion
 
         private void Prepare()
         {
@@ -64,10 +106,13 @@ namespace NAudio.Wave.Compression
             {
                 streamHeader.sourceBufferLength = bytesToConvert;
                 streamHeader.sourceBufferLengthUsed = bytesToConvert;
-                AcmStreamConvertFlags flags = firstTime ? (AcmStreamConvertFlags.Start | AcmStreamConvertFlags.BlockAlign) : AcmStreamConvertFlags.BlockAlign;
+                AcmStreamConvertFlags flags = firstTime
+                    ? (AcmStreamConvertFlags.Start | AcmStreamConvertFlags.BlockAlign)
+                    : AcmStreamConvertFlags.BlockAlign;
                 MmException.Try(AcmInterop.acmStreamConvert(streamHandle, streamHeader, flags), "acmStreamConvert");
                 firstTime = false;
-                System.Diagnostics.Debug.Assert(streamHeader.destBufferLength == destBuffer.Length, "Codecs should not change dest buffer length");
+                Debug.Assert(streamHeader.destBufferLength == destBuffer.Length,
+                    "Codecs should not change dest buffer length");
                 sourceBytesConverted = streamHeader.sourceBufferLengthUsed;
             }
             finally
@@ -77,52 +122,5 @@ namespace NAudio.Wave.Compression
 
             return streamHeader.destBufferLengthUsed;
         }
-
-        public byte[] SourceBuffer
-        {
-            get
-            {
-                return sourceBuffer;
-            }
-        }
-
-        public byte[] DestBuffer
-        {
-            get
-            {
-                return destBuffer;
-            }
-        }
-
-        #region IDisposable Members
-
-        bool disposed = false;
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Dispose(true);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                //Unprepare();
-                sourceBuffer = null;
-                destBuffer = null;
-                hSourceBuffer.Free();
-                hDestBuffer.Free();
-            }
-            disposed = true;
-        }
-
-        ~AcmStreamHeader()
-        {
-            System.Diagnostics.Debug.Assert(false, "AcmStreamHeader dispose was not called");
-            Dispose(false);
-        }
-        #endregion
     }
-
 }

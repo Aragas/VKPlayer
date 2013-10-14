@@ -20,24 +20,34 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 // updated for use in NAudio
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi.Interfaces;
 
 namespace NAudio.CoreAudioApi
 {
-
     /// <summary>
-    /// MM Device Enumerator
+    ///     MM Device Enumerator
     /// </summary>
     public class MMDeviceEnumerator
     {
-        private IMMDeviceEnumerator _realEnumerator;
+        private readonly IMMDeviceEnumerator _realEnumerator;
 
         /// <summary>
-        /// Enumerate Audio Endpoints
+        ///     Creates a new MM Device Enumerator
+        /// </summary>
+        public MMDeviceEnumerator()
+        {
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                throw new NotSupportedException("This functionality is only supported on Windows Vista or newer.");
+            }
+            _realEnumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator;
+        }
+
+        /// <summary>
+        ///     Enumerate Audio Endpoints
         /// </summary>
         /// <param name="dataFlow">Desired DataFlow</param>
         /// <param name="dwStateMask">State Mask</param>
@@ -50,7 +60,7 @@ namespace NAudio.CoreAudioApi
         }
 
         /// <summary>
-        /// Get Default Endpoint
+        ///     Get Default Endpoint
         /// </summary>
         /// <param name="dataFlow">Data Flow</param>
         /// <param name="role">Role</param>
@@ -58,32 +68,20 @@ namespace NAudio.CoreAudioApi
         public MMDevice GetDefaultAudioEndpoint(DataFlow dataFlow, Role role)
         {
             IMMDevice _Device = null;
-            Marshal.ThrowExceptionForHR(((IMMDeviceEnumerator)_realEnumerator).GetDefaultAudioEndpoint(dataFlow, role, out _Device));
+            Marshal.ThrowExceptionForHR(_realEnumerator.GetDefaultAudioEndpoint(dataFlow, role, out _Device));
             return new MMDevice(_Device);
         }
 
         /// <summary>
-        /// Get device by ID
+        ///     Get device by ID
         /// </summary>
         /// <param name="ID">Device ID</param>
         /// <returns>Device</returns>
         public MMDevice GetDevice(string ID)
         {
             IMMDevice _Device = null;
-            Marshal.ThrowExceptionForHR(((IMMDeviceEnumerator)_realEnumerator).GetDevice(ID, out _Device));
+            Marshal.ThrowExceptionForHR(_realEnumerator.GetDevice(ID, out _Device));
             return new MMDevice(_Device);
-        }
-
-        /// <summary>
-        /// Creates a new MM Device Enumerator
-        /// </summary>
-        public MMDeviceEnumerator()
-        {
-            if (System.Environment.OSVersion.Version.Major < 6)
-            {
-                throw new NotSupportedException("This functionality is only supported on Windows Vista or newer.");
-            }
-            _realEnumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator;
         }
     }
 }
