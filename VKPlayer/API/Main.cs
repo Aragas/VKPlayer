@@ -10,14 +10,16 @@ namespace Rainmeter
 
         enum AudioPlayer
         {
-            Player,
+            Status,
             Artist,
             Title,
             Duration,
-            Time,
+            Position,
             State,
             Repeat,
-            Shuffle
+            Shuffle,
+            Volume,
+            Progress
         }
         AudioPlayer Type;
 
@@ -27,11 +29,11 @@ namespace Rainmeter
 
         internal void Reload(Rainmeter.API rm, ref double maxValue)
         {
-            string type = rm.ReadString("Type", "");
+            string type = rm.ReadString("PlayerType", "");
             switch (type.ToLowerInvariant())
             {
-                case "player":
-                    Type = AudioPlayer.Player;
+                case "status":
+                    Type = AudioPlayer.Status;
                     break;
                 case "state":
                     Type = AudioPlayer.State;
@@ -45,8 +47,8 @@ namespace Rainmeter
                 case "duration":
                     Type = AudioPlayer.Duration;
                     break;
-                case "time":
-                    Type = AudioPlayer.Time;
+                case "position":
+                    Type = AudioPlayer.Position;
                     break;
                 case "repeat":
                     Type = AudioPlayer.Repeat;
@@ -54,8 +56,14 @@ namespace Rainmeter
                 case "shuffle":
                     Type = AudioPlayer.Shuffle;
                     break;
+                case "volume":
+                    Type = AudioPlayer.Volume;
+                    break;
+                case "progress":
+                    Type = AudioPlayer.Progress;
+                    break;
                 default:
-                    API.Log(API.LogType.Error, "VKPlugin.dll Type=" + type + " not valid");
+                    API.Log(API.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
                     break;
             }
 
@@ -72,20 +80,23 @@ namespace Rainmeter
                 case AudioPlayer.Duration:
                     return Player.Duration;
 
-                case AudioPlayer.Time:
+                case AudioPlayer.Position:
                     if (Player.Played) Player.NextCheck(); //find better methode.
-                    return Math.Round(Player.Time);
+                    return Math.Round(Player.Position);
 
                 case AudioPlayer.State:
-                    return (double)Player.State;
+                    return Player.State;
 
                 case AudioPlayer.Repeat:
-                    if (Player.Repeat) return 255.0;
-                    else return 128.0;
+                    if (Player.Repeat) return 0.0;
+                    else return 1.0;
 
                 case AudioPlayer.Shuffle:
-                    if (Player.Shuffle) return 255.0;
-                    else return 128.0;
+                    if (Player.Shuffle) return 0.0;
+                    else return 1.0;
+
+                case AudioPlayer.Progress:
+                    return Player.Progress;
             }
             return 0.0;
         }
@@ -94,7 +105,7 @@ namespace Rainmeter
         {
             switch (Type)
             {
-                case AudioPlayer.Player:
+                case AudioPlayer.Status:
                     return "VKPlayer by Aragas (Aragasas)";
 
                 case AudioPlayer.Artist:

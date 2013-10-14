@@ -36,7 +36,7 @@
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Debug\x32\</OutputPath>
-    <DefineConstants>X86</DefineConstants>
+    <DefineConstants>DEBUG;X86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -59,19 +59,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\x64\</OutputPath>
-    <DefineConstants>X64</DefineConstants>
+    <DefineConstants>DEBUG;X64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <NoWarn>1607</NoWarn>
-    <WarningLevel>0</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\Release\x64\</OutputPath>
-    <DefineConstants>TRACE;X64</DefineConstants>
+    <DefineConstants>X64</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DebugType>none</DebugType>
@@ -329,7 +330,7 @@
     <Compile Include="NAudio\Utils\ProgressLog.Designer.cs">
       <DependentUpon>ProgressLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Verification.cs" />
+    <Compile Include="API\Verification.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriver.cs" />
     <Compile Include="NAudio\Wave\Asio\AsioDriverCapability.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriverExt.cs" />

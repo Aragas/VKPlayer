@@ -7,13 +7,11 @@ namespace VKPlayer
 {
     public static class Verification
     {
-        public static string Id;
-        public static string Token;
         public static bool TokenIdExists
         {
             get
             {
-                if (Token != null || Id != null) return true;
+                if (OAuth.Token != null || OAuth.Id != null) return true;
                 else return false;
             }
         }
@@ -22,20 +20,29 @@ namespace VKPlayer
         {
             if (!TokenIdExists)
             {
-                try
+#if DEBUG
+                OAuth.OAuthRun();
+                Player.Execute(Command, OAuth.Token, OAuth.Id);
+#else
+                    try
                 {
                     OAuth.OAuthRun();
-                    Player.Execute(Command, Token, Id);
+                    Player.Execute(Command, OAuth.Token, OAuth.Id);
                 }
                 catch { }
+#endif
             }
             else
             {
+#if DEBUG
+                Player.Execute(Command, OAuth.Token, OAuth.Id);
+#else
                 try
                 {
-                    Player.Execute(Command, Token, Id);
+                    Player.Execute(Command, OAuth.Token, OAuth.Id);
                 }
                 catch { }
+#endif
             }
         }
 

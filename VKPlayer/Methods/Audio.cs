@@ -4,6 +4,9 @@ using System.Xml;
 
 namespace VKPlayer
 {
+    /// <summary>
+    /// Operations with audio.
+    /// </summary>
     public class Audio
     {
         public string token { get; set; }
@@ -35,7 +38,7 @@ namespace VKPlayer
                 sucheck = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror)  return null;
+            if (sucheck == sucheckerror) return null;
             if (sucheck == sucheckerror2) return null;
 
             #endregion
@@ -77,7 +80,7 @@ namespace VKPlayer
                 sucheck = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror)  return null;
+            if (sucheck == sucheckerror) return null;
             if (sucheck == sucheckerror2) return null;
             #endregion
 

@@ -108,10 +108,11 @@ namespace VKPlayer
             get
             {
                 if (waveOut.PlaybackState == PlaybackState.Playing) return 1.0;
+                else if (waveOut.PlaybackState == PlaybackState.Paused) return 2.0;
                 else return 0.0;
             }
         }
-        public static double Time
+        public static double Position
         {
             get
             {
@@ -122,6 +123,17 @@ namespace VKPlayer
                         return volumeStream.CurrentTime.TotalSeconds;
                     }
                     else return 0.0;
+                }
+                else return 0.0;
+            }
+        }
+        public static double Progress
+        {
+            get
+            {
+                if (option == Playing.Ready)
+                {
+                    return Position / Duration;
                 }
                 else return 0.0;
             }
@@ -137,13 +149,16 @@ namespace VKPlayer
             Id = id;
 
             if (Command == "PlayPause") PlayPause();
+            else if (Command == "Play") PlayPause();
+            else if (Command == "Pause") PlayPause();
             else if (Command == "Stop") Stop();
             else if (Command == "Next") Next();
             else if (Command == "Previous") Previous();
-            else if (Command == "AddVolume") AddVolume();
-            else if (Command == "RemVolume") RemVolume();
-            else if (Command == "Repeat") RepeatV();
-            else if (Command == "Shuffle") ShuffleV();
+            else if (Command.Contains("SetVolume")) SetVolume(Command.Remove(0,10));
+            else if (Command.Contains("SetShuffle")) SetShuffle(Command.Remove(0, 11));
+            else if (Command.Contains("SetRepeat")) SetRepeat(Command.Remove(0, 10));
+            else if (Command.Contains("SetPosition")) SetPosition(Command.Remove(0, 12));
+            else if (Command.Contains("SetRating")) SetRating(Command.Remove(0, 10));
             else return;
         }
 
@@ -209,36 +224,88 @@ namespace VKPlayer
                 }
             }
         }
-        public static void AddVolume()
+
+        public static void SetVolume(string Value)
         {
-            volumeStream.Volume += 0.1F;
-        }
-        public static void RemVolume()
-        {
-            volumeStream.Volume -= 0.1F;
-        }
-        public static void RepeatV()
-        {
-            if (Repeat)
+            if (Value.Contains("+") || Value.Contains("-"))
             {
-                Repeat = false;
+                Value.Remove(0, 1);
+                volumeStream.Volume += Convert.ToSingle(Convert.ToInt32(Value) / 100);
             }
             else
             {
-                Repeat = true;
-                Shuffle = false;
+#if DEBUG
+                volumeStream.Volume = Convert.ToSingle(Convert.ToInt32(Value) / 100);
+#else
+                try
+                {
+                    volumeStream.Volume = Convert.ToSingle(Convert.ToInt32(Value) / 100);
+                }
+                catch { }
+#endif
             }
         }
-        public static void ShuffleV()
+        public static void SetRepeat(string Value)
         {
-            if (Shuffle)
+            if (Value == "1") Repeat = true;
+            else if (Value == "0") Repeat = false;
+            else if (Value == "-1")
             {
-                Shuffle = false;
+                if (Repeat)
+                {
+                    Repeat = false;
+                }
+                else
+                {
+                    Repeat = true;
+                    Shuffle = false;
+                }
+            }
+            else ;
+        }
+        public static void SetShuffle(string Value)
+        {
+            if (Value == "1") Shuffle = true;
+            else if (Value == "0") Shuffle = false;
+            else if (Value == "-1")
+            {
+                if (Shuffle)
+                {
+                    Shuffle = false;
+                }
+                else
+                {
+                    Shuffle = true;
+                    Repeat = false;
+                }
+            }
+            else ;
+        }
+        public static void SetPosition(string Value)
+        {
+            if (Value.Contains("+") || Value.Contains("-"))
+            {
+                Value.Remove(0, 1);
+                //
             }
             else
             {
-                Shuffle = true;
-                Repeat = false;
+#if DEBUG
+                //
+#else
+                try
+                {
+                //
+                }
+                catch { }
+#endif
+            }
+        }
+        public static void SetRating(string Value)
+        {
+            if (Value == "1" || Value == "2" || Value == "3" ||
+                Value == "4" || Value == "5")
+            {
             }
         }
 
