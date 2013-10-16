@@ -37,7 +37,7 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (Option != Playing.Ready) return false;
-                return !(Duration > VolumeStream.CurrentTime.TotalSeconds);
+                return (Duration < VolumeStream.CurrentTime.TotalSeconds);
             }
         }
 
@@ -140,6 +140,25 @@ namespace Rainmeter.AudioPlayer
         #endregion
 
         #region Execute
+
+        public static void Execute(string command, string token, string id)
+        {
+            Token = token;
+            Id = id;
+
+            if (command == "PlayPause") PlayPause();
+            else if (command == "Play") PlayPause();
+            else if (command == "Pause") PlayPause();
+            else if (command == "Stop") Stop();
+            else if (command == "Next") Next();
+            else if (command == "Previous") Previous();
+            else if (command.Contains("SetVolume")) SetVolume(command.Remove(0, 10));
+            else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
+            else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
+            else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
+            else if (command.Contains("SetRating")) SetRating(command.Remove(0, 10));
+            else return;
+        }
 
         public static void PlayPause()
         {

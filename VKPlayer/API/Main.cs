@@ -48,10 +48,6 @@ namespace Rainmeter.API
             }
         }
 
-        //internal void Initialize()
-        //{
-        //}
-
         internal double Update()
         {
             switch (_type)
@@ -60,10 +56,10 @@ namespace Rainmeter.API
                     return Player.Duration;
 
                 case AudioPlayer.Position:
-                    if (Player.Played) Player.NextCheck(); //find better methode.
                     return Math.Round(Player.Position);
 
                 case AudioPlayer.State:
+                    if (Player.Played) Player.NextCheck();
                     return Player.State;
 
                 case AudioPlayer.Repeat:
