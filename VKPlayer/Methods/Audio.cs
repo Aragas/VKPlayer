@@ -14,8 +14,8 @@ namespace Rainmeter.Methods
         private string AudioCount()
         {
             // Параметры конфигурации.
-            string method = "audio.getCount.xml?";
-            string param = "owner_id=" + Id;
+            const string method = "audio.getCount.xml?";
+            var param = "owner_id=" + Id;
 
             //Получение документа.
             var doc = new XmlDocument();
@@ -25,12 +25,11 @@ namespace Rainmeter.Methods
 
             #region ErrorCheck
 
-            XmlNodeList nodeListError;
-            nodeListError = root.SelectNodes("error_code");
+            XmlNodeList nodeListError = root.SelectNodes("error_code");
             // Выявление ошибочного запрса.
-            string sucheck = "";
-            string sucheckerror = "<error_code>5</error_code>";
-            string sucheckerror2 = "<error_code>7</error_code>";
+            var sucheck = "";
+            const string sucheckerror = "<error_code>5</error_code>";
+            const string sucheckerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
@@ -42,14 +41,12 @@ namespace Rainmeter.Methods
 
             #endregion
 
-            string countstring = "0";
+            var countstring = "0";
             try
             {
                 countstring = root["response"].InnerText;
             }
-            catch
-            {
-            }
+            catch {}
 
             return countstring;
         }
@@ -58,8 +55,8 @@ namespace Rainmeter.Methods
         {
             var arr3 = new string[0];
             // Параметры конфигурации.
-            string method = "audio.get.xml?";
-            string param = "owner_id=" + Id + "&count=" + AudioCount();
+            const string method = "audio.get.xml?";
+            var param = "owner_id=" + Id + "&count=" + AudioCount();
 
             //Получение документа.
             var doc = new XmlDocument();
@@ -69,13 +66,12 @@ namespace Rainmeter.Methods
 
             #region ErrorCheck
 
-            XmlNodeList nodeListError;
-            nodeListError = root.SelectNodes("error_code"); // Для выявления ошибочного запроса.
+            XmlNodeList nodeListError = root.SelectNodes("error_code");
 
             // Выявление ошибочного запрса.
-            string sucheck = "";
-            string sucheckerror = "<error_code>5</error_code>";
-            string sucheckerror2 = "<error_code>7</error_code>";
+            var sucheck = "";
+            const string sucheckerror = "<error_code>5</error_code>";
+            const string sucheckerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
@@ -91,11 +87,11 @@ namespace Rainmeter.Methods
 
             foreach (XmlNode node in doc.SelectNodes("//audio"))
             {
-                string space = "#";
-                string artist = node["artist"].InnerText;
-                string title = node["title"].InnerText;
-                string duration = node["duration"].InnerText;
-                string url = node["url"].InnerText.Split('?')[0];
+                const string space = "#";
+                var artist = node["artist"].InnerText;
+                var title = node["title"].InnerText;
+                var duration = node["duration"].InnerText;
+                var url = node["url"].InnerText.Split('?')[0];
 
                 if (artist.Contains("&amp;")) artist = artist.Replace("&amp;", "&");
                 if (title.Contains("&amp;")) title = title.Replace("&amp;", "&");

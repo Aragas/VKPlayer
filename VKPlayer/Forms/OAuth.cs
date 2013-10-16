@@ -25,11 +25,10 @@ namespace Rainmeter.Forms
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            string url = webBrowser1.Url.ToString();
-            string l = url.Split('#')[1];
+            var tokenid = webBrowser1.Url.ToString().Split('#')[1];
 
-            Token = l.Split('&')[0].Split('=')[1];
-            Id = l.Split('=')[3];
+            Token = tokenid.Split('&')[0].Split('=')[1];
+            Id = tokenid.Split('=')[3];
         }
 
         private void button1_Click(object sender, EventArgs e)

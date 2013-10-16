@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Rainmeter.AudioPlayer;
 
 namespace Rainmeter.API
@@ -10,7 +9,7 @@ namespace Rainmeter.API
 
         internal void Reload(API rm, ref double maxValue)
         {
-            string type = rm.ReadString("PlayerType", "");
+            var type = rm.ReadString("PlayerType", "");
             switch (type.ToLowerInvariant())
             {
                 case "status":
@@ -49,9 +48,9 @@ namespace Rainmeter.API
             }
         }
 
-        internal void Initialize()
-        {
-        }
+        //internal void Initialize()
+        //{
+        //}
 
         internal double Update()
         {
@@ -68,12 +67,10 @@ namespace Rainmeter.API
                     return Player.State;
 
                 case AudioPlayer.Repeat:
-                    if (Player.Repeat) return 0.0;
-                    return 1.0;
+                    return Player.Repeat ? 0.0 : 1.0;
 
                 case AudioPlayer.Shuffle:
-                    if (Player.Shuffle) return 0.0;
-                    return 1.0;
+                    return Player.Shuffle ? 0.0 : 1.0;
 
                 case AudioPlayer.Progress:
                     return Player.Progress;
@@ -89,17 +86,15 @@ namespace Rainmeter.API
                     return "VKPlayer by Aragas (Aragasas)";
 
                 case AudioPlayer.Artist:
-                    if (Player.Artist == null) return "Not Authorized";
-                    return Player.Artist;
+                    return Player.Artist ?? "Not Authorized";
 
                 case AudioPlayer.Title:
-                    if (Player.Title == null) return "Click Play";
-                    return Player.Title;
+                    return Player.Title ?? "Click Play";
             }
             return null;
         }
 
-        internal void ExecuteBang(string сommand)
+        internal static void ExecuteBang(string сommand)
         {
             Verification.StartExecute(сommand);
         }
@@ -118,55 +113,4 @@ namespace Rainmeter.API
             Progress
         }
     }
-
-    #region Plugin
-
-    public static class Plugin
-    {
-        internal static Dictionary<uint, Measure> Measures = new Dictionary<uint, Measure>();
-
-        [DllExport]
-        public static unsafe void Initialize(void** data, void* rm)
-        {
-            var id = (uint) *data;
-            Measures.Add(id, new Measure());
-        }
-
-        [DllExport]
-        public static unsafe void Finalize(void* data)
-        {
-            var id = (uint) data;
-            Measures.Remove(id);
-        }
-
-        [DllExport]
-        public static unsafe void Reload(void* data, void* rm, double* maxValue)
-        {
-            var id = (uint) data;
-            Measures[id].Reload(new API((IntPtr) rm), ref *maxValue);
-        }
-
-        [DllExport]
-        public static unsafe double Update(void* data)
-        {
-            var id = (uint) data;
-            return Measures[id].Update();
-        }
-
-        [DllExport]
-        public static unsafe char* GetString(void* data)
-        {
-            var id = (uint) data;
-            fixed (char* s = Measures[id].GetString()) return s;
-        }
-
-        [DllExport]
-        public static unsafe void ExecuteBang(void* data, char* args)
-        {
-            var id = (uint) data;
-            Measures[id].ExecuteBang(new string(args));
-        }
-    }
-
-    #endregion
 }

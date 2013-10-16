@@ -34,11 +34,11 @@ namespace Rainmeter.API
             Debug = 4
         }
 
-        private readonly IntPtr m_Rm;
+        private readonly IntPtr _mRm;
 
         public API(IntPtr rm)
         {
-            m_Rm = rm;
+            _mRm = rm;
         }
 
         public static unsafe char* ToUnsafe(string s)
@@ -69,59 +69,59 @@ namespace Rainmeter.API
 
         public unsafe string ReadString(string option, string defValue, bool replaceMeasures = true)
         {
-            char* value = RmReadString((void*) m_Rm, ToUnsafe(option), ToUnsafe(defValue), replaceMeasures ? 1 : 0);
+            char* value = RmReadString((void*) _mRm, ToUnsafe(option), ToUnsafe(defValue), replaceMeasures ? 1 : 0);
             return new string(value);
         }
 
         public unsafe string ReadPath(string option, string defValue)
         {
-            char* relativePath = RmReadString((void*) m_Rm, ToUnsafe(option), ToUnsafe(defValue), 1);
-            char* value = RmPathToAbsolute((void*) m_Rm, relativePath);
+            char* relativePath = RmReadString((void*) _mRm, ToUnsafe(option), ToUnsafe(defValue), 1);
+            char* value = RmPathToAbsolute((void*) _mRm, relativePath);
             return new string(value);
         }
 
         public unsafe double ReadDouble(string option, double defValue)
         {
-            return RmReadFormula((void*) m_Rm, ToUnsafe(option), defValue);
+            return RmReadFormula((void*) _mRm, ToUnsafe(option), defValue);
         }
 
         public unsafe int ReadInt(string option, int defValue)
         {
-            return (int) RmReadFormula((void*) m_Rm, ToUnsafe(option), defValue);
+            return (int) RmReadFormula((void*) _mRm, ToUnsafe(option), defValue);
         }
 
         public unsafe string ReplaceVariables(string str)
         {
-            char* value = RmReplaceVariables((void*) m_Rm, ToUnsafe(str));
+            char* value = RmReplaceVariables((void*) _mRm, ToUnsafe(str));
             return new string(value);
         }
 
         public unsafe string GetMeasureName()
         {
-            var value = (char*) RmGet((void*) m_Rm, 0);
+            var value = (char*) RmGet((void*) _mRm, 0);
             return new string(value);
         }
 
         public unsafe IntPtr GetSkin()
         {
-            return (IntPtr) RmGet((void*) m_Rm, 1);
+            return (IntPtr) RmGet((void*) _mRm, 1);
         }
 
         public unsafe string GetSettingsFile()
         {
-            var value = (char*) RmGet((void*) m_Rm, 2);
+            var value = (char*) RmGet((void*) _mRm, 2);
             return new string(value);
         }
 
         public unsafe string GetSkinName()
         {
-            var value = (char*) RmGet((void*) m_Rm, 3);
+            var value = (char*) RmGet((void*) _mRm, 3);
             return new string(value);
         }
 
         public unsafe IntPtr GetSkinWindow()
         {
-            return (IntPtr) RmGet((void*) m_Rm, 4);
+            return (IntPtr) RmGet((void*) _mRm, 4);
         }
 
         public static unsafe void Execute(IntPtr skin, string command)
@@ -133,13 +133,5 @@ namespace Rainmeter.API
         {
             LSLog((int) type, null, ToUnsafe(message));
         }
-    }
-
-    /// <summary>
-    ///     Dummy attribute to mark method as exported for DllExporter.exe.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
-    public class DllExport : Attribute
-    {
     }
 }

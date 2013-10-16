@@ -98,6 +98,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\DllExport.cs" />
+    <Compile Include="API\Plugin.cs" />
     <Compile Include="Methods\Audio.cs" />
     <Compile Include="NAudio\Dmo\AudioMediaSubtypes.cs" />
     <Compile Include="NAudio\Dmo\DmoDescriptor.cs" />
