@@ -27,17 +27,17 @@ namespace Rainmeter.Methods
 
             XmlNodeList nodeListError = root.SelectNodes("error_code");
             // Выявление ошибочного запрса.
-            var sucheck = "";
-            const string sucheckerror = "<error_code>5</error_code>";
-            const string sucheckerror2 = "<error_code>7</error_code>";
+            var check = "";
+            const string checkerror = "<error_code>5</error_code>";
+            const string checkerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
-                sucheck = node.OuterXml;
+                check = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror) return null;
-            if (sucheck == sucheckerror2) return null;
+            if (check == checkerror) return null;
+            if (check == checkerror2) return null;
 
             #endregion
 
@@ -69,17 +69,17 @@ namespace Rainmeter.Methods
             XmlNodeList nodeListError = root.SelectNodes("error_code");
 
             // Выявление ошибочного запрса.
-            var sucheck = "";
-            const string sucheckerror = "<error_code>5</error_code>";
-            const string sucheckerror2 = "<error_code>7</error_code>";
+            var check = "";
+            const string checkerror = "<error_code>5</error_code>";
+            const string checkerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
-                sucheck = node.OuterXml;
+                check = node.OuterXml;
             }
 
-            if (sucheck == sucheckerror) return null;
-            if (sucheck == sucheckerror2) return null;
+            if (check == checkerror) return null;
+            if (check == checkerror2) return null;
 
             #endregion
 

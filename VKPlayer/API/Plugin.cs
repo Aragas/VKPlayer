@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Rainmeter.Plugin;
 
 namespace Rainmeter.API
 {
@@ -45,7 +46,6 @@ namespace Rainmeter.API
         [DllExport]
         public static unsafe void ExecuteBang(void* data, char* args)
         {
-            //var id = (uint) data;
             Measure.ExecuteBang(new string(args));
         }
     }

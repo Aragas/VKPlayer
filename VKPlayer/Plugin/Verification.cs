@@ -1,7 +1,7 @@
 ﻿using Rainmeter.AudioPlayer;
 using Rainmeter.Forms;
 
-namespace Rainmeter.API
+namespace Rainmeter.Plugin
 {
     public static class Verification
     {
@@ -9,23 +9,22 @@ namespace Rainmeter.API
         {
             get
             {
-                if (OAuth.Token != null || OAuth.Id != null) return true;
-                return false;
+                return (OAuth.Token != null || OAuth.Id != null);
             }
         }
 
-        public static void StartExecute(string сommand)
+        public static void StartExecute(string command)
         {
             if (!TokenIdExists)
             {
 #if DEBUG
                 OAuth.OAuthRun();
-                Player.Execute(сommand, OAuth.Token, OAuth.Id);
+                Player.Execute(command, OAuth.Token, OAuth.Id);
 #else
                 try
                 {
                     OAuth.OAuthRun();
-                    Player.Execute(сommand, OAuth.Token, OAuth.Id);
+                    Player.Execute(command, OAuth.Token, OAuth.Id);
                 }
                 catch { }
 #endif
@@ -33,11 +32,11 @@ namespace Rainmeter.API
             else
             {
 #if DEBUG
-                Player.Execute(сommand, OAuth.Token, OAuth.Id);
+                Player.Execute(command, OAuth.Token, OAuth.Id);
 #else
                 try
                 {
-                    Player.Execute(сommand, OAuth.Token, OAuth.Id);
+                    Player.Execute(command, OAuth.Token, OAuth.Id);
                 }
                 catch { }
 #endif

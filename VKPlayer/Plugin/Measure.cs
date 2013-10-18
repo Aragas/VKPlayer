@@ -1,13 +1,13 @@
 ﻿using System;
 using Rainmeter.AudioPlayer;
 
-namespace Rainmeter.API
+namespace Rainmeter.Plugin
 {
     internal class Measure
     {
         private AudioPlayer _type;
 
-        internal void Reload(API rm, ref double maxValue)
+        internal void Reload(API.API rm, ref double maxValue)
         {
             var type = rm.ReadString("PlayerType", "");
             switch (type.ToLowerInvariant())
@@ -43,7 +43,7 @@ namespace Rainmeter.API
                     _type = AudioPlayer.Progress;
                     break;
                 default:
-                    API.Log(API.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
+                    API.API.Log(API.API.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
                     break;
             }
         }
@@ -90,9 +90,9 @@ namespace Rainmeter.API
             return null;
         }
 
-        internal static void ExecuteBang(string сommand)
+        internal static void ExecuteBang(string command)
         {
-            Verification.StartExecute(сommand);
+            Verification.StartExecute(command);
         }
 
         private enum AudioPlayer

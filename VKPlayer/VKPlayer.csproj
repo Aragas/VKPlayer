@@ -138,6 +138,7 @@
     <Compile Include="NAudio\Dsp\ShiftBuffer.cs" />
     <Compile Include="NAudio\Dsp\SimpleCompressor.cs" />
     <Compile Include="NAudio\Dsp\SimpleGate.cs" />
+    <Compile Include="NAudio\FileFormats\Mp3\Mp3FrameDecompressor.cs" />
     <Compile Include="NAudio\Midi\MidiInterop.cs" />
     <Compile Include="NAudio\Mixer\MixerInterop.cs" />
     <Compile Include="NAudio\Utils\Decibels.cs" />
@@ -198,7 +199,6 @@
     <Compile Include="NAudio\FileFormats\Mp3\Id3v2Tag.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\IMp3FrameDecompressor.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\Mp3Frame.cs" />
-    <Compile Include="NAudio\FileFormats\Mp3\Mp3FrameDecompressor.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\MpegLayer.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\MpegVersion.cs" />
     <Compile Include="NAudio\FileFormats\Mp3\XingHeader.cs" />
@@ -209,8 +209,8 @@
     <Compile Include="Forms\OAuth.Designer.cs">
       <DependentUpon>OAuth.cs</DependentUpon>
     </Compile>
-    <Compile Include="API\Main.cs" />
-    <Compile Include="API\RainmeterAPI.cs" />
+    <Compile Include="Plugin\Measure.cs" />
+    <Compile Include="API\API.cs" />
     <Compile Include="AudioPlayer\Player.cs" />
     <Compile Include="NAudio\Midi\ChannelAfterTouchEvent.cs" />
     <Compile Include="NAudio\Midi\ControlChangeEvent.cs" />
@@ -265,7 +265,7 @@
     <Compile Include="NAudio\Utils\ProgressLog.Designer.cs">
       <DependentUpon>ProgressLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="API\Verification.cs" />
+    <Compile Include="Plugin\Verification.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriver.cs" />
     <Compile Include="NAudio\Wave\Asio\AsioDriverCapability.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriverExt.cs" />
@@ -417,7 +417,17 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

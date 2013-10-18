@@ -8,10 +8,11 @@ using Rainmeter.Methods;
 
 namespace Rainmeter.AudioPlayer
 {
-    //To do:
-    //Save mp3 to disk while playing from url.
-    //Check if mp3 is saved and play local.
-    //Play next mp3 after previous (find better methode)
+    // To do:
+    // Save mp3 to disk while playing from url.
+    // Check if mp3 is saved and play local.
+    // Play next mp3 after previous (find better method).
+    // Fix somehow error with sample check.
 
     public static class Player
     {
@@ -37,7 +38,7 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (Option != Playing.Ready) return false;
-                return (Duration < VolumeStream.CurrentTime.TotalSeconds);
+                return VolumeStream != null && (Duration < VolumeStream.CurrentTime.TotalSeconds);
             }
         }
 
@@ -68,7 +69,10 @@ namespace Rainmeter.AudioPlayer
 
         private static string Url
         {
-            get { return Array[_numb].Split('#')[4]; }
+            get
+            {
+                return Array[_numb].Split('#')[4];
+            }
         }
 
         #endregion
@@ -182,9 +186,9 @@ namespace Rainmeter.AudioPlayer
 
                 case Playing.Init:
                 {
-                    #region
+                    #region Thread
 
-                    ThreadStart work = delegate
+                    ThreadStart playStart = delegate
                     {
                         try
                         {
@@ -192,7 +196,7 @@ namespace Rainmeter.AudioPlayer
                         }
                         catch{}
                     };
-                    new Thread(work).Start();
+                    new Thread(playStart).Start();
 
                     #endregion
                 }
@@ -208,33 +212,31 @@ namespace Rainmeter.AudioPlayer
         public static void Next()
         {
             if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
-            if (_numb < Array.Length)
-            {
-                _numb += 1;
+            if (_numb >= Array.Length) return;
+            _numb += 1;
 
-                Stop();
-                _waveOut.Dispose();
-                _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                _gStream.Dispose();
-                _gStream = new GetStream();
-                Play();
-            }
+            Stop();
+            _waveOut.Dispose();
+            _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+            _gStream.Dispose();
+            _gStream = null;
+            _gStream = new GetStream();
+            Play();
         }
 
         public static void Previous()
         {
             if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
-            if (_numb > 0)
-            {
-                _numb -= 1;
+            if (_numb <= 0) return;
+            _numb -= 1;
 
-                Stop();
-                _waveOut.Dispose();
-                _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                _gStream.Dispose();
-                _gStream = new GetStream();
-                Play();
-            }
+            Stop();
+            _waveOut.Dispose();
+            _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+            _gStream.Dispose();
+            _gStream = null;
+            _gStream = new GetStream();
+            Play();
         }
 
         public static void SetVolume(string value)
@@ -331,18 +333,17 @@ namespace Rainmeter.AudioPlayer
             else if (Shuffle)
             {
                 if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
-                if (_numb < Array.Length)
-                {
-                    var random = new Random();
-                    _numb = random.Next(0, Array.Length);
+                if (_numb > Array.Length) return;
 
-                    Stop();
-                    _waveOut.Dispose();
-                    _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                    _gStream.Dispose();
-                    _gStream = new GetStream();
-                    Play();
-                }
+                var random = new Random();
+                _numb = random.Next(0, Array.Length);
+
+                Stop();
+                _waveOut.Dispose();
+                _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                _gStream.Dispose();
+                _gStream = new GetStream();
+                Play();
             }
             else Next();
         }
@@ -373,11 +374,24 @@ namespace Rainmeter.AudioPlayer
     {
         private readonly Stream _ms = new MemoryStream();
         private GCHandle _gch;
+        private Mp3FileReader _reader;
+        private WaveChannel32 _channel;
 
         public string Url { get; set; }
 
         public void Dispose()
         {
+            if (_reader != null)
+            {
+                _reader.Dispose();
+                _reader = null;
+            }
+            if (_channel != null)
+            {
+                _channel.Dispose();
+                _channel = null;
+            }
+
             Close();
             GC.SuppressFinalize(this);
         }
@@ -386,7 +400,7 @@ namespace Rainmeter.AudioPlayer
         {
             #region Download
 
-            new Thread(delegate(object o)
+            ThreadStart download = delegate
             {
                 var response = WebRequest.Create(Url).GetResponse();
                 using (var stream = response.GetResponseStream())
@@ -400,8 +414,10 @@ namespace Rainmeter.AudioPlayer
                         _ms.Write(buffer, 0, read);
                         _ms.Position = pos;
                     }
+                    Thread.CurrentThread.Abort();
                 }
-            }).Start();
+            };
+            new Thread(download).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
             while (_ms.Length < 65536 * 10)
@@ -415,7 +431,9 @@ namespace Rainmeter.AudioPlayer
             #endregion
 
             _ms.Position = 0;
-            Player.VolumeStream = new WaveChannel32(new Mp3FileReader(_ms));
+            _reader = new Mp3FileReader(_ms);
+            _channel = new WaveChannel32(_reader);
+            Player.VolumeStream = _channel;
             return Player.VolumeStream;
         }
 
