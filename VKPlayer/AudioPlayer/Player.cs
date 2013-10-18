@@ -25,7 +25,7 @@ namespace Rainmeter.AudioPlayer
 
         public static Playing Option = Playing.Init;
 
-        internal static WaveChannel32 VolumeStream;
+        internal static WaveChannel32 AudioStream;
         private static GetStream _gStream = new GetStream();
         private static WaveOut _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
         private static readonly Audio Au = new Audio();
@@ -38,7 +38,7 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (Option != Playing.Ready) return false;
-                return VolumeStream != null && (Duration < VolumeStream.CurrentTime.TotalSeconds);
+                return AudioStream != null && (Duration < AudioStream.CurrentTime.TotalSeconds);
             }
         }
 
@@ -144,7 +144,7 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (_waveOut.PlaybackState == PlaybackState.Stopped) return 0.0;
-                if (!Played)return VolumeStream.CurrentTime.TotalSeconds;
+                if (!Played)return AudioStream.CurrentTime.TotalSeconds;
                 return 0.0;
             }
         }
@@ -264,12 +264,12 @@ namespace Rainmeter.AudioPlayer
             if (value.Contains("+") || value.Contains("-"))
             {
                 value.Remove(0, 1);
-                VolumeStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
+                AudioStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
             }
             else
             {
 #if DEBUG
-                VolumeStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
+                AudioStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
 #else
                 try
                 {
@@ -328,10 +328,19 @@ namespace Rainmeter.AudioPlayer
 
         public static void SetPosition(string value)
         {
+            if (Option != Playing.Ready) return;
             if (value.Contains("+") || value.Contains("-"))
             {
-                value.Remove(0, 1);
-                //
+                bool plus = (value.Contains("+"));
+                double seconds = Convert.ToDouble(value.Remove(0, 1))/100.0*Duration;
+
+                if (plus) AudioStream.CurrentTime.Add(new TimeSpan(0, 0, (int)seconds));
+                else AudioStream.CurrentTime.Subtract(new TimeSpan(0, 0, (int)seconds));
+            }
+            else
+            {
+                double seconds = Convert.ToDouble(value)/100.0*Duration;
+                AudioStream.CurrentTime = new TimeSpan(0, 0, (int) seconds);
             }
         }
 
@@ -373,7 +382,7 @@ namespace Rainmeter.AudioPlayer
             _gStream.Url = Url;
 
             _waveOut.Init(_gStream.Wave());
-            VolumeStream.Volume = 0.7F;
+            AudioStream.Volume = 0.7F;
             _waveOut.Play();
         }
 
@@ -410,6 +419,7 @@ namespace Rainmeter.AudioPlayer
             {
                 _channel.Dispose();
                 _channel = null;
+                //Player.AudioStream = null;
             }
 
             Close();
@@ -420,8 +430,8 @@ namespace Rainmeter.AudioPlayer
         {
             #region Download
 
-            ThreadStart download = delegate
-            {
+            //ThreadStart download = delegate
+            //{
                 var response = WebRequest.Create(Url).GetResponse();
                 using (var stream = response.GetResponseStream())
                 {
@@ -434,10 +444,10 @@ namespace Rainmeter.AudioPlayer
                         _ms.Write(buffer, 0, read);
                         _ms.Position = pos;
                     }
-                    Thread.CurrentThread.Abort();
+                    //Thread.CurrentThread.Abort();
                 }
-            };
-            new Thread(download).Start();
+            //};
+            //new Thread(download).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
             while (_ms.Length < 65536 * 10)
@@ -453,8 +463,8 @@ namespace Rainmeter.AudioPlayer
             _ms.Position = 0;
             _reader = new Mp3FileReader(_ms);
             _channel = new WaveChannel32(_reader);
-            Player.VolumeStream = _channel;
-            return Player.VolumeStream;
+            Player.AudioStream = _channel;
+            return Player.AudioStream;
         }
 
         private void Close()
