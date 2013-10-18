@@ -265,7 +265,7 @@
     <Compile Include="NAudio\Utils\ProgressLog.Designer.cs">
       <DependentUpon>ProgressLog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugin\Verification.cs" />
+    <Compile Include="Plugin\Execute.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriver.cs" />
     <Compile Include="NAudio\Wave\Asio\AsioDriverCapability.cs" />
     <Compile Include="NAudio\Wave\Asio\ASIODriverExt.cs" />

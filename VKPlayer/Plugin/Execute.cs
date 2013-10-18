@@ -3,7 +3,7 @@ using Rainmeter.Forms;
 
 namespace Rainmeter.Plugin
 {
-    public static class Verification
+    public static class Execute
     {
         private static bool TokenIdExists
         {
@@ -13,7 +13,7 @@ namespace Rainmeter.Plugin
             }
         }
 
-        public static void StartExecute(string command)
+        public static void Start(string command)
         {
             if (!TokenIdExists)
             {

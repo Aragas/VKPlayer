@@ -92,7 +92,7 @@ namespace Rainmeter.Plugin
 
         internal static void ExecuteBang(string command)
         {
-            Verification.StartExecute(command);
+            Execute.Start(command);
         }
 
         private enum AudioPlayer
