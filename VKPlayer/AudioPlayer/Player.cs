@@ -12,7 +12,7 @@ namespace Rainmeter.AudioPlayer
     // Save mp3 to disk while playing from url.
     // Check if mp3 is saved and play local.
     // Play next mp3 after previous (find better method).
-    // Fix somehow error with sample check.
+    // Fix somehow error with sample check. //Maybe fixed.
 
     public static class Player
     {
@@ -96,6 +96,26 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (ArrayExists) return Array[_numb].Split('#')[2];
+                return null;
+            }
+        }
+
+        public static string NextArtist
+        {
+            get
+            {
+                if (!ArrayExists) return null;
+                if (_numb < Array.Length) return Array[_numb + 1].Split('#')[1];
+                return null;
+            }
+        }
+
+        public static string NextTitle
+        {
+            get
+            {
+                if (!ArrayExists) return null;
+                if (_numb < Array.Length) return Array[_numb + 1].Split('#')[2];
                 return null;
             }
         }

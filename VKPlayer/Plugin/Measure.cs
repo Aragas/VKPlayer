@@ -86,6 +86,12 @@ namespace Rainmeter.Plugin
 
                 case AudioPlayer.Title:
                     return Player.Title ?? "Click Play";
+
+                case AudioPlayer.NextArtist:
+                    return Player.NextArtist ?? "Not Authorized";
+
+                case AudioPlayer.NextTitle:
+                    return Player.NextTitle ?? "Click Play";
             }
             return null;
         }
@@ -100,6 +106,8 @@ namespace Rainmeter.Plugin
             Status,
             Artist,
             Title,
+            NextArtist,
+            NextTitle,
             Duration,
             Position,
             State,
