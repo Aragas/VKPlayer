@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Windows.Forms;
+using Rainmeter.API;
 using Rainmeter.AudioPlayer;
+using Rainmeter.Forms;
 
 namespace Rainmeter.Plugin
 {
@@ -7,7 +10,7 @@ namespace Rainmeter.Plugin
     {
         private AudioPlayer _type;
 
-        internal void Reload(API.API rm, ref double maxValue)
+        internal void Reload(API.RainmeterAPI rm, ref double maxValue)
         {
             var type = rm.ReadString("PlayerType", "");
             switch (type.ToLowerInvariant())
@@ -43,7 +46,7 @@ namespace Rainmeter.Plugin
                     _type = AudioPlayer.Progress;
                     break;
                 default:
-                    API.API.Log(API.API.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
+                    API.RainmeterAPI.Log(API.RainmeterAPI.LogType.Error, "VKPlugin.dll PlayerType=" + type + " not valid");
                     break;
             }
         }
@@ -59,7 +62,7 @@ namespace Rainmeter.Plugin
                     return Math.Round(Player.Position);
 
                 case AudioPlayer.State:
-                    if (Player.Played) Player.NextCheck();
+                    if (Player.Played) Player.PlayNext();
                     return Player.State;
 
                 case AudioPlayer.Repeat:

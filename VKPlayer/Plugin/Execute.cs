@@ -15,32 +15,35 @@ namespace Rainmeter.Plugin
 
         public static void Start(string command)
         {
+#if DEBUG
             if (!TokenIdExists)
             {
-#if DEBUG
                 OAuth.OAuthRun();
                 Player.Execute(command, OAuth.Token, OAuth.Id);
+            }
+            else
+            {
+                Player.Execute(command, OAuth.Token, OAuth.Id);
+            }
 #else
+            if (!TokenIdExists)
+            {
                 try
                 {
                     OAuth.OAuthRun();
                     Player.Execute(command, OAuth.Token, OAuth.Id);
                 }
-                catch { }
-#endif
+                catch {}
             }
             else
             {
-#if DEBUG
-                Player.Execute(command, OAuth.Token, OAuth.Id);
-#else
                 try
                 {
                     Player.Execute(command, OAuth.Token, OAuth.Id);
                 }
-                catch { }
-#endif
+                catch {}
             }
+#endif
         }
     }
 }

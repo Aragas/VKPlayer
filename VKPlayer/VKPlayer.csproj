@@ -210,7 +210,7 @@
       <DependentUpon>OAuth.cs</DependentUpon>
     </Compile>
     <Compile Include="Plugin\Measure.cs" />
-    <Compile Include="API\API.cs" />
+    <Compile Include="API\RainmeterAPI.cs" />
     <Compile Include="AudioPlayer\Player.cs" />
     <Compile Include="NAudio\Midi\ChannelAfterTouchEvent.cs" />
     <Compile Include="NAudio\Midi\ControlChangeEvent.cs" />
@@ -408,6 +408,9 @@
     <EmbeddedResource Include="Forms\OAuth.resx">
       <DependentUpon>OAuth.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OAuth.ru-RU.resx">
+      <DependentUpon>OAuth.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OAuth.ru.resx">
       <DependentUpon>OAuth.cs</DependentUpon>

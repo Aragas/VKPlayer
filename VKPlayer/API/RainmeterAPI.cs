@@ -24,7 +24,7 @@ namespace Rainmeter.API
     /// <summary>
     ///     Wrapper around the Rainmeter C API.
     /// </summary>
-    public class API
+    public class RainmeterAPI
     {
         public enum LogType
         {
@@ -36,7 +36,7 @@ namespace Rainmeter.API
 
         private readonly IntPtr _mRm;
 
-        public API(IntPtr rm)
+        public RainmeterAPI(IntPtr rm)
         {
             _mRm = rm;
         }

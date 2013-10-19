@@ -13,31 +13,26 @@ namespace Rainmeter.Methods
 
         private string AudioCount()
         {
-            // Параметры конфигурации.
+            // Parameters.
             const string method = "audio.getCount.xml?";
             var param = "owner_id=" + Id;
 
-            //Получение документа.
+            // Getting document.
             var doc = new XmlDocument();
             doc.Load("https://api.vk.com/method/" + method + param + "&access_token=" + Token);
 
-            XmlNode root = doc.DocumentElement;
-
             #region ErrorCheck
 
+            XmlNode root = doc.DocumentElement;
             XmlNodeList nodeListError = root.SelectNodes("error_code");
-            // Выявление ошибочного запрса.
-            var check = "";
+
             const string checkerror = "<error_code>5</error_code>";
             const string checkerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
-                check = node.OuterXml;
+                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2)) return null;
             }
-
-            if (check == checkerror) return null;
-            if (check == checkerror2) return null;
 
             #endregion
 
@@ -54,32 +49,26 @@ namespace Rainmeter.Methods
         public string[] AudioList()
         {
             var arr3 = new string[0];
-            // Параметры конфигурации.
+            // Parameters.
             const string method = "audio.get.xml?";
             var param = "owner_id=" + Id + "&count=" + AudioCount();
 
-            //Получение документа.
+            // Getting document.
             var doc = new XmlDocument();
             doc.Load("https://api.vk.com/method/" + method + param + "&access_token=" + Token);
 
-            XmlNode root = doc.DocumentElement;
-
             #region ErrorCheck
 
+            XmlNode root = doc.DocumentElement;
             XmlNodeList nodeListError = root.SelectNodes("error_code");
 
-            // Выявление ошибочного запрса.
-            var check = "";
             const string checkerror = "<error_code>5</error_code>";
             const string checkerror2 = "<error_code>7</error_code>";
 
             foreach (XmlNode node in nodeListError)
             {
-                check = node.OuterXml;
+                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2)) return null;
             }
-
-            if (check == checkerror) return null;
-            if (check == checkerror2) return null;
 
             #endregion
 

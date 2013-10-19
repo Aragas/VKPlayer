@@ -27,7 +27,7 @@ namespace Rainmeter.API
         public static unsafe void Reload(void* data, void* rm, double* maxValue)
         {
             var id = (uint) data;
-            Measures[id].Reload(new API((IntPtr) rm), ref *maxValue);
+            Measures[id].Reload(new RainmeterAPI((IntPtr) rm), ref *maxValue);
         }
 
         [DllExport]

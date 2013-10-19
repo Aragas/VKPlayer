@@ -12,27 +12,25 @@ namespace Rainmeter.AudioPlayer
     // Save mp3 to disk while playing from url.
     // Check if mp3 is saved and play local.
     // Play next mp3 after previous (find better method).
-    // Fix somehow error with sample check. //Maybe fixed.
 
     public static class Player
     {
-        public enum Playing
+        internal enum Playing
         {
             Init,
             Buffering,
             Ready
         }
 
-        public static Playing Option = Playing.Init;
-
+        internal static Playing Option = Playing.Init;
         internal static WaveChannel32 AudioStream;
         private static GetStream _gStream = new GetStream();
         private static WaveOut _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
         private static readonly Audio Au = new Audio();
 
-        public static string Token;
-        public static string Id;
-
+        /// <summary>
+        /// Audiofile was played.
+        /// </summary>
         public static bool Played
         {
             get
@@ -44,6 +42,8 @@ namespace Rainmeter.AudioPlayer
 
         #region Internal
 
+        private static string _token;
+        private static string _id;
         private static string[] _array;
         private static int _numb;
 
@@ -60,8 +60,8 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (ArrayExists) return _array;
-                Au.Token = Token;
-                Au.Id = Id;
+                Au.Token = _token;
+                Au.Id = _id;
                 _array = Au.AudioList();
                 return _array;
             }
@@ -79,8 +79,8 @@ namespace Rainmeter.AudioPlayer
 
         #region Variables
 
-        public static bool Repeat = false;
-        public static bool Shuffle = false;
+        public static bool Repeat;
+        public static bool Shuffle;
 
         public static string Artist
         {
@@ -165,10 +165,16 @@ namespace Rainmeter.AudioPlayer
 
         #region Execute
 
+        /// <summary>
+        /// Execute your command.
+        /// </summary>
+        /// <param name="command">Your command.</param>
+        /// <param name="token">Your token.</param>
+        /// <param name="id">Your id.</param>
         public static void Execute(string command, string token, string id)
         {
-            Token = token;
-            Id = id;
+            _token = token;
+            _id = id;
 
             if (command == "PlayPause") PlayPause();
             else if (command == "Play") PlayPause();
@@ -180,11 +186,38 @@ namespace Rainmeter.AudioPlayer
             else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
             else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
             else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
-            else if (command.Contains("SetRating")) SetRating(command.Remove(0, 10));
             else return;
         }
 
-        public static void PlayPause()
+        /// <summary>
+        /// Check if audiofile has ended. If true, starts next file. Better put in a loop.
+        /// </summary>
+        public static void PlayNext()
+        {
+            if (Repeat)
+            {
+                Stop();
+                Play();
+            }
+            else if (Shuffle)
+            {
+                if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
+                if (_numb > Array.Length) return;
+
+                var random = new Random();
+                _numb = random.Next(0, Array.Length);
+
+                Stop();
+                _waveOut.Dispose();
+                _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
+                _gStream.Dispose();
+                _gStream = new GetStream();
+                Play();
+            }
+            else Next();
+        }
+
+        private static void PlayPause()
         {
             switch (Option)
             {
@@ -224,12 +257,12 @@ namespace Rainmeter.AudioPlayer
             }
         }
 
-        public static void Stop()
+        private static void Stop()
         {
             _waveOut.Stop();
         }
 
-        public static void Next()
+        private static void Next()
         {
             if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
             if (_numb >= Array.Length) return;
@@ -244,7 +277,7 @@ namespace Rainmeter.AudioPlayer
             Play();
         }
 
-        public static void Previous()
+        private static void Previous()
         {
             if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
             if (_numb <= 0) return;
@@ -259,28 +292,40 @@ namespace Rainmeter.AudioPlayer
             Play();
         }
 
-        public static void SetVolume(string value)
+        private static void SetVolume(string value)
         {
-            if (value.Contains("+") || value.Contains("-"))
+#if DEBUG
+            if (value.StartsWith("+") || value.StartsWith("-"))
             {
-                value.Remove(0, 1);
+                value = value.Substring(1);
                 AudioStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
             }
             else
             {
-#if DEBUG
                 AudioStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
+            }
 #else
+            if (value.StartsWith("+") || value.StartsWith("-"))
+            {
                 try
                 {
-                    VolumeStream.Volume = Convert.ToSingle(Convert.ToInt32(value) / 100);
+                    value = value.Substring(1);
+                    AudioStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
                 }
-                catch { }
-#endif
+                catch{}
             }
+            else
+            {
+                try
+                {
+                    AudioStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
+                }
+                catch{}
+            }
+#endif
         }
 
-        public static void SetRepeat(string value)
+        private static void SetRepeat(string value)
         {
             switch (value)
             {
@@ -303,7 +348,7 @@ namespace Rainmeter.AudioPlayer
             }
         }
 
-        public static void SetShuffle(string value)
+        private static void SetShuffle(string value)
         {
             switch (value)
             {
@@ -326,55 +371,49 @@ namespace Rainmeter.AudioPlayer
             }
         }
 
-        public static void SetPosition(string value)
+        private static void SetPosition(string value)
         {
+#if DEBUG
             if (Option != Playing.Ready) return;
-            if (value.Contains("+") || value.Contains("-"))
+            if (value.StartsWith("+") || value.StartsWith("-"))
             {
                 bool plus = (value.Contains("+"));
-                double seconds = Convert.ToDouble(value.Remove(0, 1))/100.0*Duration;
+                value = value.Substring(1);
+                double seconds = Convert.ToDouble(value)/100.0*Duration;
 
-                if (plus) AudioStream.CurrentTime.Add(new TimeSpan(0, 0, (int)seconds));
-                else AudioStream.CurrentTime.Subtract(new TimeSpan(0, 0, (int)seconds));
+                if (plus) AudioStream.CurrentTime = AudioStream.CurrentTime.Add(TimeSpan.FromSeconds(seconds));
+                else AudioStream.CurrentTime = AudioStream.CurrentTime.Subtract(TimeSpan.FromSeconds(seconds));
             }
             else
             {
                 double seconds = Convert.ToDouble(value)/100.0*Duration;
-                AudioStream.CurrentTime = new TimeSpan(0, 0, (int) seconds);
+                AudioStream.CurrentTime = TimeSpan.FromSeconds(seconds);
             }
-        }
-
-        public static void SetRating(string value)
-        {
-            if (value == "1" || value == "2" || value == "3" ||
-                value == "4" || value == "5")
+#else
+            if (Option != Playing.Ready) return;
+            if (value.StartsWith("+") || value.StartsWith("-"))
             {
-            }
-        }
+                try
+                {
+                    bool plus = (value.Contains("+"));
+                    value = value.Substring(1);
+                    double seconds = Convert.ToDouble(value)/100.0*Duration;
 
-        public static void NextCheck()
-        {
-            if (Repeat)
+                    if (plus) AudioStream.CurrentTime = AudioStream.CurrentTime.Add(TimeSpan.FromSeconds(seconds));
+                    else AudioStream.CurrentTime = AudioStream.CurrentTime.Subtract(TimeSpan.FromSeconds(seconds));
+                }
+                catch{}
+            }
+            else
             {
-                Stop();
-                Play();
+                try
+                {
+                    double seconds = Convert.ToDouble(value)/100.0*Duration;
+                    AudioStream.CurrentTime = TimeSpan.FromSeconds(seconds);
+                }
+                catch{}
             }
-            else if (Shuffle)
-            {
-                if (_waveOut.PlaybackState == PlaybackState.Stopped) return;
-                if (_numb > Array.Length) return;
-
-                var random = new Random();
-                _numb = random.Next(0, Array.Length);
-
-                Stop();
-                _waveOut.Dispose();
-                _waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback());
-                _gStream.Dispose();
-                _gStream = new GetStream();
-                Play();
-            }
-            else Next();
+#endif
         }
 
         private static void Play()
@@ -401,12 +440,11 @@ namespace Rainmeter.AudioPlayer
 
     internal class GetStream : IDisposable
     {
-        private readonly Stream _ms = new MemoryStream();
-        private GCHandle _gch;
+        private Stream _ms = new MemoryStream();
         private Mp3FileReader _reader;
         private WaveChannel32 _channel;
 
-        public string Url { get; set; }
+        public string Url { private get; set; }
 
         public void Dispose()
         {
@@ -419,10 +457,13 @@ namespace Rainmeter.AudioPlayer
             {
                 _channel.Dispose();
                 _channel = null;
-                //Player.AudioStream = null;
+            }
+            if (_ms != null)
+            {
+                _ms.Dispose();
+                _ms = null;
             }
 
-            Close();
             GC.SuppressFinalize(this);
         }
 
@@ -430,8 +471,6 @@ namespace Rainmeter.AudioPlayer
         {
             #region Download
 
-            //ThreadStart download = delegate
-            //{
                 var response = WebRequest.Create(Url).GetResponse();
                 using (var stream = response.GetResponseStream())
                 {
@@ -444,10 +483,7 @@ namespace Rainmeter.AudioPlayer
                         _ms.Write(buffer, 0, read);
                         _ms.Position = pos;
                     }
-                    //Thread.CurrentThread.Abort();
                 }
-            //};
-            //new Thread(download).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
             while (_ms.Length < 65536 * 10)
@@ -465,14 +501,6 @@ namespace Rainmeter.AudioPlayer
             _channel = new WaveChannel32(_reader);
             Player.AudioStream = _channel;
             return Player.AudioStream;
-        }
-
-        private void Close()
-        {
-            if (_gch.IsAllocated)
-            {
-                _gch.Free();
-            }
         }
     }
 }

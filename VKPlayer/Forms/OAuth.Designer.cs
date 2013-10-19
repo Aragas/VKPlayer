@@ -36,9 +36,11 @@
             // webBrowser1
             // 
             resources.ApplyResources(this.webBrowser1, "webBrowser1");
+            this.webBrowser1.IsWebBrowserContextMenuEnabled = false;
             this.webBrowser1.Name = "webBrowser1";
             this.webBrowser1.ScriptErrorsSuppressed = true;
-            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
+            this.webBrowser1.ScrollBarsEnabled = false;
+            this.webBrowser1.Navigated += new System.Windows.Forms.WebBrowserNavigatedEventHandler(this.webBrowser1_Navigated);
             // 
             // button1
             // 
@@ -55,6 +57,7 @@
             this.Controls.Add(this.webBrowser1);
             this.DoubleBuffered = true;
             this.Name = "OAuth";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.ResumeLayout(false);
 
         }
