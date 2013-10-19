@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading;
 using NAudio.Wave;
 using Rainmeter.Methods;
@@ -14,17 +13,10 @@ namespace Rainmeter.AudioPlayer
     // Play next mp3 after previous (find better method).
 
     /// <summary>
-    /// AudioPlayer
+    ///     AudioPlayer
     /// </summary>
     public static class Player
     {
-        internal enum Playing
-        {
-            Init,
-            Buffering,
-            Ready
-        }
-
         internal static Playing Option = Playing.Init;
         internal static WaveChannel32 AudioStream;
         private static GetStream _gStream = new GetStream();
@@ -32,7 +24,7 @@ namespace Rainmeter.AudioPlayer
         private static readonly Audio Au = new Audio();
 
         /// <summary>
-        /// Audiofile was played.
+        ///     Audiofile was played.
         /// </summary>
         public static bool Played
         {
@@ -52,10 +44,7 @@ namespace Rainmeter.AudioPlayer
 
         private static bool ArrayExists
         {
-            get
-            {
-                return _array != null;
-            }
+            get { return _array != null; }
         }
 
         private static string[] Array
@@ -72,10 +61,7 @@ namespace Rainmeter.AudioPlayer
 
         private static string Url
         {
-            get
-            {
-                return Array[_numb].Split('#')[4];
-            }
+            get { return Array[_numb].Split('#')[4]; }
         }
 
         #endregion
@@ -158,7 +144,7 @@ namespace Rainmeter.AudioPlayer
             {
                 if (Option == Playing.Ready)
                 {
-                    return Position / Duration;
+                    return Position/Duration;
                 }
                 return 0.0;
             }
@@ -169,7 +155,7 @@ namespace Rainmeter.AudioPlayer
         #region Execute
 
         /// <summary>
-        /// Execute your command.
+        ///     Execute your command.
         /// </summary>
         /// <param name="command">Your command.</param>
         /// <param name="token">Your token.</param>
@@ -188,12 +174,11 @@ namespace Rainmeter.AudioPlayer
             else if (command.Contains("SetVolume")) SetVolume(command.Remove(0, 10));
             else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
             else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
-            //else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
             else return;
         }
 
         /// <summary>
-        /// Check if audiofile has ended. If true, starts next file. Better put in a loop.
+        ///     Check if audiofile has ended. If true, starts next file. Better put in a loop.
         /// </summary>
         public static void PlayNext()
         {
@@ -241,21 +226,15 @@ namespace Rainmeter.AudioPlayer
                     break;
 
                 case Playing.Init:
+                {
+                    try
                     {
-                        #region Thread
-
-                        ThreadStart playStart = delegate
-                        {
-                            try
-                            {
-                                Play();
-                            }
-                            catch { }
-                        };
-                        new Thread(playStart).Start();
-
-                        #endregion
+                        Play();
                     }
+                    catch
+                    {
+                    }
+                }
                     break;
             }
         }
@@ -374,15 +353,6 @@ namespace Rainmeter.AudioPlayer
             }
         }
 
-        private static void SetPosition(string value)
-        {
-#if DEBUG
-           
-#else
-
-#endif
-        }
-
         private static void Play()
         {
             _gStream.Url = Url;
@@ -403,13 +373,20 @@ namespace Rainmeter.AudioPlayer
         }
 
         #endregion
+
+        internal enum Playing
+        {
+            Init,
+            Buffering,
+            Ready
+        }
     }
 
     internal class GetStream : IDisposable
     {
-        private Stream _ms = new MemoryStream();
-        private Mp3FileReader _reader;
+        private readonly Stream _ms = new MemoryStream();
         private WaveChannel32 _channel;
+        private Mp3FileReader _reader;
 
         public string Url { private get; set; }
 
@@ -425,11 +402,6 @@ namespace Rainmeter.AudioPlayer
                 _channel.Dispose();
                 _channel = null;
             }
-            if (_ms != null)
-            {
-                _ms.Dispose();
-                _ms = null;
-            }
 
             GC.SuppressFinalize(this);
         }
@@ -440,14 +412,14 @@ namespace Rainmeter.AudioPlayer
 
             ThreadStart download = delegate
             {
-                var response = WebRequest.Create(Url).GetResponse();
-                using (var stream = response.GetResponseStream())
+                WebResponse response = WebRequest.Create(Url).GetResponse();
+                using (Stream stream = response.GetResponseStream())
                 {
                     var buffer = new byte[65536]; // 64KB chunks
                     int read;
                     while (stream != null && (read = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
-                        var pos = _ms.Position;
+                        long pos = _ms.Position;
                         _ms.Position = _ms.Length;
                         _ms.Write(buffer, 0, read);
                         _ms.Position = pos;
@@ -458,13 +430,13 @@ namespace Rainmeter.AudioPlayer
             new Thread(download).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
-            while (_ms.Length < 65536 * 10)
+            while (_ms.Length < 65536*10)
             {
                 if (Player.Option != Player.Playing.Buffering) Player.Option = Player.Playing.Buffering;
 
                 Thread.Sleep(500);
             }
-            if (_ms.Length > 65536 * 10) Player.Option = Player.Playing.Ready;
+            if (_ms.Length > 65536*10) Player.Option = Player.Playing.Ready;
 
             #endregion
 

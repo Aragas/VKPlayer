@@ -4,17 +4,17 @@ using System.Xml;
 namespace Rainmeter.Methods
 {
     /// <summary>
-    /// Operations with audio.
+    ///     Operations with audio.
     /// </summary>
     public class Audio
     {
         /// <summary>
-        /// Set your Token.
+        ///     Set your Token.
         /// </summary>
         public string Token { private get; set; }
 
         /// <summary>
-        /// Set your Id.
+        ///     Set your Id.
         /// </summary>
         public string Id { private get; set; }
 
@@ -22,7 +22,7 @@ namespace Rainmeter.Methods
         {
             // Parameters.
             const string method = "audio.getCount.xml?";
-            var param = "owner_id=" + Id;
+            string param = "owner_id=" + Id;
 
             // Getting document.
             var doc = new XmlDocument();
@@ -43,12 +43,14 @@ namespace Rainmeter.Methods
 
             #endregion
 
-            var countstring = "0";
+            string countstring = "0";
             try
             {
                 countstring = root["response"].InnerText;
             }
-            catch {}
+            catch
+            {
+            }
 
             return countstring;
         }
@@ -58,7 +60,7 @@ namespace Rainmeter.Methods
             var arr3 = new string[0];
             // Parameters.
             const string method = "audio.get.xml?";
-            var param = "owner_id=" + Id + "&count=" + AudioCount();
+            string param = "owner_id=" + Id + "&count=" + AudioCount();
 
             // Getting document.
             var doc = new XmlDocument();
@@ -84,10 +86,10 @@ namespace Rainmeter.Methods
             foreach (XmlNode node in doc.SelectNodes("//audio"))
             {
                 const string space = "#";
-                var artist = node["artist"].InnerText;
-                var title = node["title"].InnerText;
-                var duration = node["duration"].InnerText;
-                var url = node["url"].InnerText.Split('?')[0];
+                string artist = node["artist"].InnerText;
+                string title = node["title"].InnerText;
+                string duration = node["duration"].InnerText;
+                string url = node["url"].InnerText.Split('?')[0];
 
                 if (artist.Contains("&amp;")) artist = artist.Replace("&amp;", "&");
                 if (title.Contains("&amp;")) title = title.Replace("&amp;", "&");

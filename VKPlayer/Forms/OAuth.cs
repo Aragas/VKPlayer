@@ -4,19 +4,25 @@ using System.Windows.Forms;
 namespace Rainmeter.Forms
 {
     /// <summary>
-    /// Get Token and Id.
+    ///     Get Token and Id.
     /// </summary>
     public partial class OAuth : Form
     {
         /// <summary>
-        /// Get your Token (Use after OAuthRun()).
+        ///     Get your Token (Use after OAuthRun()).
         /// </summary>
         public static string Token;
 
         /// <summary>
-        /// Get your Id (Use after OAuthRun()).
+        ///     Get your Id (Use after OAuthRun()).
         /// </summary>
         public static string Id;
+
+        private OAuth()
+        {
+            InitializeComponent();
+            webBrowser1.Navigate(Url);
+        }
 
         private static string Url
         {
@@ -33,14 +39,8 @@ namespace Rainmeter.Forms
             }
         }
 
-        private OAuth()
-        {
-            InitializeComponent();
-            webBrowser1.Navigate(Url);
-        }
-
         /// <summary>
-        /// Run Form.
+        ///     Run Form.
         /// </summary>
         public static void OAuthRun()
         {
@@ -63,13 +63,12 @@ namespace Rainmeter.Forms
 
         private void SaveData()
         {
-            var data = webBrowser1.Url.ToString().Split('#')[1];
+            string data = webBrowser1.Url.ToString().Split('#')[1];
 
             Token = data.Split('&')[0].Split('=')[1];
             Id = data.Split('=')[3];
 
             Close();
         }
-
     }
 }

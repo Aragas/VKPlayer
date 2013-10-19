@@ -26,8 +26,5 @@ namespace Rainmeter.API
     [AttributeUsage(AttributeTargets.Method)]
     public class DllExport : Attribute
     {
-        public DllExport()
-        {
-        }
     }
 }

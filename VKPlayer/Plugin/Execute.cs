@@ -7,10 +7,7 @@ namespace Rainmeter.Plugin
     {
         private static bool TokenIdExists
         {
-            get
-            {
-                return (OAuth.Token != null || OAuth.Id != null);
-            }
+            get { return (OAuth.Token != null || OAuth.Id != null); }
         }
 
         public static void Start(string command)
