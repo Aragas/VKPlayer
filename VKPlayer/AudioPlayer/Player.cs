@@ -147,7 +147,7 @@ namespace Rainmeter.AudioPlayer
             get
             {
                 if (_waveOut.PlaybackState == PlaybackState.Stopped) return 0.0;
-                if (!Played)return AudioStream.CurrentTime.TotalSeconds;
+                if (!Played) return AudioStream.CurrentTime.TotalSeconds;
                 return 0.0;
             }
         }
@@ -158,7 +158,7 @@ namespace Rainmeter.AudioPlayer
             {
                 if (Option == Playing.Ready)
                 {
-                    return Position/Duration;
+                    return Position / Duration;
                 }
                 return 0.0;
             }
@@ -188,7 +188,7 @@ namespace Rainmeter.AudioPlayer
             else if (command.Contains("SetVolume")) SetVolume(command.Remove(0, 10));
             else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
             else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
-            else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
+            //else if (command.Contains("SetPosition")) SetPosition(command.Remove(0, 12));
             else return;
         }
 
@@ -241,21 +241,21 @@ namespace Rainmeter.AudioPlayer
                     break;
 
                 case Playing.Init:
-                {
-                    #region Thread
-
-                    ThreadStart playStart = delegate
                     {
-                        try
-                        {
-                            Play();
-                        }
-                        catch{}
-                    };
-                    new Thread(playStart).Start();
+                        #region Thread
 
-                    #endregion
-                }
+                        ThreadStart playStart = delegate
+                        {
+                            try
+                            {
+                                Play();
+                            }
+                            catch { }
+                        };
+                        new Thread(playStart).Start();
+
+                        #endregion
+                    }
                     break;
             }
         }
@@ -313,17 +313,17 @@ namespace Rainmeter.AudioPlayer
                 try
                 {
                     value = value.Substring(1);
-                    AudioStream.Volume += Convert.ToSingle(Convert.ToInt32(value)/100);
+                    AudioStream.Volume += Convert.ToSingle(Convert.ToInt32(value) / 100);
                 }
-                catch{}
+                catch { }
             }
             else
             {
                 try
                 {
-                    AudioStream.Volume = Convert.ToSingle(Convert.ToInt32(value)/100);
+                    AudioStream.Volume = Convert.ToSingle(Convert.ToInt32(value) / 100);
                 }
-                catch{}
+                catch { }
             }
 #endif
         }
@@ -377,45 +377,9 @@ namespace Rainmeter.AudioPlayer
         private static void SetPosition(string value)
         {
 #if DEBUG
-            if (Option != Playing.Ready) return;
-            if (value.StartsWith("+") || value.StartsWith("-"))
-            {
-                bool plus = (value.Contains("+"));
-                value = value.Substring(1);
-                double seconds = Convert.ToDouble(value)/100.0*Duration;
-
-                if (plus) AudioStream.CurrentTime = AudioStream.CurrentTime.Add(TimeSpan.FromSeconds(seconds));
-                else AudioStream.CurrentTime = AudioStream.CurrentTime.Subtract(TimeSpan.FromSeconds(seconds));
-            }
-            else
-            {
-                double seconds = Convert.ToDouble(value)/100.0*Duration;
-                AudioStream.CurrentTime = TimeSpan.FromSeconds(seconds);
-            }
+           
 #else
-            if (Option != Playing.Ready) return;
-            if (value.StartsWith("+") || value.StartsWith("-"))
-            {
-                try
-                {
-                    bool plus = (value.Contains("+"));
-                    value = value.Substring(1);
-                    double seconds = Convert.ToDouble(value)/100.0*Duration;
 
-                    if (plus) AudioStream.CurrentTime = AudioStream.CurrentTime.Add(TimeSpan.FromSeconds(seconds));
-                    else AudioStream.CurrentTime = AudioStream.CurrentTime.Subtract(TimeSpan.FromSeconds(seconds));
-                }
-                catch{}
-            }
-            else
-            {
-                try
-                {
-                    double seconds = Convert.ToDouble(value)/100.0*Duration;
-                    AudioStream.CurrentTime = TimeSpan.FromSeconds(seconds);
-                }
-                catch{}
-            }
 #endif
         }
 
@@ -474,6 +438,8 @@ namespace Rainmeter.AudioPlayer
         {
             #region Download
 
+            ThreadStart download = delegate
+            {
                 var response = WebRequest.Create(Url).GetResponse();
                 using (var stream = response.GetResponseStream())
                 {
@@ -486,7 +452,10 @@ namespace Rainmeter.AudioPlayer
                         _ms.Write(buffer, 0, read);
                         _ms.Position = pos;
                     }
+                    Thread.CurrentThread.Abort();
                 }
+            };
+            new Thread(download).Start();
 
             // Pre-buffering some data to allow NAudio to start playing
             while (_ms.Length < 65536 * 10)
