@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rainmeter.AudioPlayer;
 using Rainmeter.Plugin;
 
 namespace Rainmeter.API

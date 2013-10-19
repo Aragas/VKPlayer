@@ -13,6 +13,9 @@ namespace Rainmeter.AudioPlayer
     // Check if mp3 is saved and play local.
     // Play next mp3 after previous (find better method).
 
+    /// <summary>
+    /// AudioPlayer
+    /// </summary>
     public static class Player
     {
         internal enum Playing

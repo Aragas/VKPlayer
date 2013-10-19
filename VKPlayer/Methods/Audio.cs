@@ -4,12 +4,19 @@ using System.Xml;
 namespace Rainmeter.Methods
 {
     /// <summary>
-    ///     Operations with audio.
+    /// Operations with audio.
     /// </summary>
     public class Audio
     {
-        public string Token { get; set; }
-        public string Id { get; set; }
+        /// <summary>
+        /// Set your Token.
+        /// </summary>
+        public string Token { private get; set; }
+
+        /// <summary>
+        /// Set your Id.
+        /// </summary>
+        public string Id { private get; set; }
 
         private string AudioCount()
         {

@@ -3,9 +3,19 @@ using System.Windows.Forms;
 
 namespace Rainmeter.Forms
 {
+    /// <summary>
+    /// Get Token and Id.
+    /// </summary>
     public partial class OAuth : Form
     {
+        /// <summary>
+        /// Get your Token (Use after OAuthRun()).
+        /// </summary>
         public static string Token;
+
+        /// <summary>
+        /// Get your Id (Use after OAuthRun()).
+        /// </summary>
         public static string Id;
 
         private static string Url
@@ -14,21 +24,24 @@ namespace Rainmeter.Forms
             {
                 return "https://oauth.vk.com/authorize?client_id=3328403"
                        + "&redirect_uri=https://oauth.vk.com/blank.html"
-                       + "&scope=audio&display=popup&response_type=token" +
+                       + "&scope=audio&display=popup&response_type=token"
 #if DEBUG
-                    "&revoke=1";
+                       + "&revoke=1";
 #else
-                                "";
+                       + "&revoke=0";
 #endif
             }
         }
 
-        public OAuth()
+        private OAuth()
         {
             InitializeComponent();
             webBrowser1.Navigate(Url);
         }
 
+        /// <summary>
+        /// Run Form.
+        /// </summary>
         public static void OAuthRun()
         {
             Application.Run(new OAuth());
@@ -50,10 +63,10 @@ namespace Rainmeter.Forms
 
         private void SaveData()
         {
-            var tokenid = webBrowser1.Url.ToString().Split('#')[1];
+            var data = webBrowser1.Url.ToString().Split('#')[1];
 
-            Token = tokenid.Split('&')[0].Split('=')[1];
-            Id = tokenid.Split('=')[3];
+            Token = data.Split('&')[0].Split('=')[1];
+            Id = data.Split('=')[3];
 
             Close();
         }
