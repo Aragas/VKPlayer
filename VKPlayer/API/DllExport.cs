@@ -17,7 +17,7 @@
 */
 
 using System;
-
+ 
 namespace Rainmeter.API
 {
     /// <summary>
