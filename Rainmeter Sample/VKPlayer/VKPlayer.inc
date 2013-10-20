@@ -1,49 +1,40 @@
-[Variables]
-Repeat=False
-Shuffle=False
-
 [VKPlayer]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Player
+PlayerType=STATUS
 
 [State]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=State
+PlayerType=STATE
+Substitute="0":"Player\MusicPlay.W.png","1":"Player\MusicPause.W.png","2":"Player\MusicPlay.W.png"
 
 [Artist]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Artist
+PlayerType=ARTIST
 
 [Title]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Title
+PlayerType=TITLE
 
-[Duration]
+[Progress]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Duration
-
-[Time]
-Measure=Plugin
-Plugin=VKPlayer.dll
-Type=Time
-MinValue=0
-MaxValue=[Duration]
-DynamicVariables=1
+PlayerType=PROGRESS
 
 [Repeat]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Repeat
+PlayerType=REPEAT
+Substitute="0":"255","1":"128"
 
 [Shuffle]
 Measure=Plugin
 Plugin=VKPlayer.dll
-Type=Shuffle
+PlayerType=SHUFFLE
+Substitute="0":"255","1":"128"
 
 [MeterArtist]
 Meter=STRING
@@ -68,54 +59,53 @@ AntiAlias=1
 
 [MeterPrev]
 Meter=Image
-MeterStyle=Button
+MeterStyle=StyleButtons
 ImageName=Player\MusicPrevious.W.png
 LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Previous"][!Update]
 X=12
 
 [MeterPlayPause]
 Meter=Image
-MeterStyle=Button
+MeterStyle=StyleButtons
 MeasureName=State
-ImageName=Player\Music.%1.W.png
 LeftMouseUpAction=[!CommandMeasure "VKPlayer" "PlayPause"][!Update]
 
 [MeterNext]
 Meter=Image
-MeterStyle=Button
+MeterStyle=StyleButtons
 ImageName=Player\MusicNext.W.png
 LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Next"][!Update]
 
 [MeterRepeat]
 Meter=Image
-MeterStyle=Button
+MeterStyle=StyleButtons
 ImageName=Player\MusicRepeat.W.png
 ImageAlpha=[Repeat]
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Repeat"][!Update]
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "SetPosition +10"][!Update]
 DynamicVariables=1
 
 [MeterShuffle]
 Meter=Image
-MeterStyle=Button
+MeterStyle=StyleButtons
 ImageName=Player\MusicShuffle.W.png
 ImageAlpha=[Shuffle]
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "Shuffle"][!Update]
+LeftMouseUpAction=[!CommandMeasure "VKPlayer" "SetShuffle -1"][!Update]
 DynamicVariables=1
 
-[Button]
+[StyleButtons]
 W=12
 H=12
 X=20r
 Y=35
 
-[Progress]
-MeasureName=Time
+[MeterProgress]
+MeasureName=Progress
 Meter=BAR
 Flip=0
 BarColor=185,250,160,255
 SolidColor=150,150,150,255
 BarOrientation=Horizontal
-x=12
-y=50
+X=12
+Y=50
 W=180
 H=10
