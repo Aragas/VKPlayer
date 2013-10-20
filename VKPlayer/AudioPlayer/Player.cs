@@ -174,7 +174,6 @@ namespace Rainmeter.AudioPlayer
             else if (command.Contains("SetVolume")) SetVolume(command.Remove(0, 10));
             else if (command.Contains("SetShuffle")) SetShuffle(command.Remove(0, 11));
             else if (command.Contains("SetRepeat")) SetRepeat(command.Remove(0, 10));
-            else return;
         }
 
         /// <summary>
@@ -432,7 +431,7 @@ namespace Rainmeter.AudioPlayer
             // Pre-buffering some data to allow NAudio to start playing
             while (_ms.Length < 65536*10)
             {
-                if (Player.Option != Player.Playing.Buffering) Player.Option = Player.Playing.Buffering;
+                Player.Option = Player.Playing.Buffering;
 
                 Thread.Sleep(500);
             }

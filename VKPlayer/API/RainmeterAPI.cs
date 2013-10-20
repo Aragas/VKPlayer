@@ -41,7 +41,7 @@ namespace Rainmeter.API
             _mRm = rm;
         }
 
-        public static unsafe char* ToUnsafe(string s)
+        private static unsafe char* ToUnsafe(string s)
         {
             fixed (char* p = s) return p;
         }
