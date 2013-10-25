@@ -16,11 +16,11 @@ namespace Rainmeter.Plugin
             if (!TokenIdExists)
             {
                 OAuth.OAuthRun();
-                Player.Execute(command, OAuth.Token, OAuth.Id);
+                Player.Execute(command);
             }
             else
             {
-                Player.Execute(command, OAuth.Token, OAuth.Id);
+                Player.Execute(command);
             }
 #else
             if (!TokenIdExists)
@@ -28,17 +28,17 @@ namespace Rainmeter.Plugin
                 try
                 {
                     OAuth.OAuthRun();
-                    Player.Execute(command, OAuth.Token, OAuth.Id);
+                    Player.Execute(command);
                 }
-                catch {}
+                catch { }
             }
             else
             {
                 try
                 {
-                    Player.Execute(command, OAuth.Token, OAuth.Id);
+                    Player.Execute(command);
                 }
-                catch {}
+                catch { }
             }
 #endif
         }

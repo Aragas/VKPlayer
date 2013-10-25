@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Rainmeter.Plugin;
+using System;
 using System.Collections.Generic;
-using Rainmeter.Plugin;
 
 namespace Rainmeter.API
 {
@@ -9,44 +9,44 @@ namespace Rainmeter.API
         private static readonly Dictionary<uint, Measure> Measures = new Dictionary<uint, Measure>();
 
         [DllExport]
-        public static unsafe void Initialize(void** data, void* rm)
+        public static unsafe void ExecuteBang(void* data, char* args)
         {
-            var id = (uint) *data;
-            Measures.Add(id, new Measure());
+            Measure.ExecuteBang(new string(args));
         }
 
         [DllExport]
         public static unsafe void Finalize(void* data)
         {
-            var id = (uint) data;
+            var id = (uint)data;
             Measures.Remove(id);
-        }
-
-        [DllExport]
-        public static unsafe void Reload(void* data, void* rm, double* maxValue)
-        {
-            var id = (uint) data;
-            Measures[id].Reload(new RainmeterAPI((IntPtr) rm), ref *maxValue);
-        }
-
-        [DllExport]
-        public static unsafe double Update(void* data)
-        {
-            var id = (uint) data;
-            return Measures[id].Update();
         }
 
         [DllExport]
         public static unsafe char* GetString(void* data)
         {
-            var id = (uint) data;
+            var id = (uint)data;
             fixed (char* s = Measures[id].GetString()) return s;
         }
 
         [DllExport]
-        public static unsafe void ExecuteBang(void* data, char* args)
+        public static unsafe void Initialize(void** data, void* rm)
         {
-            Measure.ExecuteBang(new string(args));
+            var id = (uint)*data;
+            Measures.Add(id, new Measure());
+        }
+
+        [DllExport]
+        public static unsafe void Reload(void* data, void* rm, double* maxValue)
+        {
+            var id = (uint)data;
+            Measures[id].Reload(new RainmeterAPI((IntPtr)rm), ref *maxValue);
+        }
+
+        [DllExport]
+        public static unsafe double Update(void* data)
+        {
+            var id = (uint)data;
+            return Measures[id].Update();
         }
     }
 }

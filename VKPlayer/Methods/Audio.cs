@@ -1,59 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Xml;
 
 namespace Rainmeter.Methods
 {
-    /// <summary>
-    ///     Operations with audio.
-    /// </summary>
     public class Audio
     {
-        /// <summary>
-        ///     Set your Token.
-        /// </summary>
-        public string Token { private get; set; }
-
         /// <summary>
         ///     Set your Id.
         /// </summary>
         public string Id { private get; set; }
 
-        private string AudioCount()
-        {
-            // Parameters.
-            const string method = "audio.getCount.xml?";
-            string param = "owner_id=" + Id;
-
-            // Getting document.
-            var doc = new XmlDocument();
-            doc.Load("https://api.vk.com/method/" + method + param + "&access_token=" + Token);
-
-            #region ErrorCheck
-
-            XmlNode root = doc.DocumentElement;
-            XmlNodeList nodeListError = root.SelectNodes("error_code");
-
-            const string checkerror = "<error_code>5</error_code>";
-            const string checkerror2 = "<error_code>7</error_code>";
-
-            foreach (XmlNode node in nodeListError)
-            {
-                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2)) return null;
-            }
-
-            #endregion
-
-            string countstring = "0";
-            try
-            {
-                countstring = root["response"].InnerText;
-            }
-            catch
-            {
-            }
-
-            return countstring;
-        }
+        /// <summary>
+        ///     Set your Token.
+        /// </summary>
+        public string Token { private get; set; }
 
         public string[] AudioList()
         {
@@ -76,10 +37,11 @@ namespace Rainmeter.Methods
 
             foreach (XmlNode node in nodeListError)
             {
-                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2)) return null;
+                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2))
+                    return null;
             }
 
-            #endregion
+            #endregion ErrorCheck
 
             #region Filtering
 
@@ -100,7 +62,47 @@ namespace Rainmeter.Methods
 
             return arr3;
 
-            #endregion
+            #endregion Filtering
+        }
+
+        private string AudioCount()
+        {
+            // Parameters.
+            const string method = "audio.getCount.xml?";
+            string param = "owner_id=" + Id;
+
+            // Getting document.
+            var doc = new XmlDocument();
+            doc.Load("https://api.vk.com/method/" + method + param + "&access_token=" + Token);
+
+            #region ErrorCheck
+
+            XmlNode root = doc.DocumentElement;
+            XmlNodeList nodeListError = root.SelectNodes("error_code");
+
+            const string checkerror = "<error_code>5</error_code>";
+            const string checkerror2 = "<error_code>7</error_code>";
+
+            foreach (XmlNode node in nodeListError)
+            {
+                if (node.OuterXml.Equals(checkerror) || node.OuterXml.Equals(checkerror2))
+                    return null;
+            }
+
+            #endregion ErrorCheck
+
+            string countstring = "0";
+
+            try
+            {
+                countstring = root["response"].InnerText;
+            }
+            catch
+            {
+                Debug.Write("AudioCount Error");
+            }
+
+            return countstring;
         }
     }
 }

@@ -1,7 +1,7 @@
 [VKPlayer]
 Measure=Plugin
 Plugin=VKPlayer.dll
-PlayerType=STATUS
+InfoType=STATUS
 
 [State]
 Measure=Plugin
