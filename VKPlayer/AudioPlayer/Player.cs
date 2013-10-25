@@ -253,7 +253,7 @@ namespace Rainmeter.AudioPlayer
             _gStream = new GetStream();
 
             _waveOut.Init(_gStream.Wave(Url));
-            AudioStream.Volume = 0.7F;
+            AudioStream.Volume = 0.15F;
             _waveOut.Play();
         }
 
