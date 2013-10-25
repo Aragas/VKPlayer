@@ -81,7 +81,7 @@ Meter=Image
 MeterStyle=StyleButtons
 ImageName=Player\MusicRepeat.W.png
 ImageAlpha=[Repeat]
-LeftMouseUpAction=[!CommandMeasure "VKPlayer" "SetPosition +10"][!Update]
+LeftMouseUpAction=[!CommandMeasure "VKPlugin" "SetRepeat -1"][!Update]
 DynamicVariables=1
 
 [MeterShuffle]
